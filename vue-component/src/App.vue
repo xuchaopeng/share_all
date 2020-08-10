@@ -6,8 +6,11 @@
     <!-- 二、组件插槽 -->
     <!-- <SlotTest></SlotTest> -->
 
+    <!-- 三、混入 -->
+    <Mixincom></Mixincom>
+
     <!-- 三、组件实践，表单实例 -->
-    <form-test></form-test>
+    <!-- <form-test></form-test> -->
 
     <!-- 四、递归组件 -->
     <!-- <Recursion></Recursion> -->
@@ -26,20 +29,22 @@
 // import Notice from '@/components/notice';
 // import Communicate from "@/components/communicate";
 // import SlotTest from "@/components/slots";
+import Mixincom from '@/components/mixincom'
 // import Recursion from "@/components/recursion";
 // import Tree from '@/components/tree'
 // import FormTest from '@/components/form'
 
 export default {
-  name: "app",
+  name: 'app',
   provide() {
     return {
-      foo: 'foo'
+      foo: 'foo',
     }
   },
   components: {
     // Communicate,
     // SlotTest,
+    Mixincom,
     // FormTest,
     // Recursion,
     // Notice,
@@ -52,10 +57,10 @@ export default {
   },
   methods: {
     onMyClick() {
-      console.log('myclick');
-    }
+      console.log('myclick')
+    },
   },
-};
+}
 </script>
 
 <style>

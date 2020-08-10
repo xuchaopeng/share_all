@@ -181,6 +181,30 @@ this.$bus.$emit('foo', handle);
 </Comp3>
 ```
 
+## 混入
+
+  - **使用场景:**
+  > - 1、有两个或多个非常相似的组件，他们基本功能差不多，但是他们之间存在差异足够的差异性。
+
+  > - 2、**如果我们把它们拆分n个不同组件?** 这样我们可能一旦功能变动，就得承担多个文件中更新代码的风险，也违背了DRY原则。
+
+  > - 3、**如果我们保留为一个组件，通过props来创造差异性，从而进行区分?** 太多的props传值会很快变得混乱不堪，维护者在使用组件的时候，需要理解一大段上下文，反而会拖慢迭代速度。
+
+  - **基本使用方式**
+  ===> 代码实例 @components/mixincom
+
+  - **合并问题**
+    - 1、组件与mixin都定义相同的生命周期钩子函数。
+    > 默认mixin定义的钩子会先执行，接着才是组件的生命周期钩子函数。组件拥有最终发言权。其实只不过是重写这个生命钩子函数。
+    - 2、组件与mixin定义相同其它非钩子函数。
+    > 组件内定义的权重最高，mixin中定义的属性方法会被盖掉。
+
+  其它，根组件的混入。后续实例
+
+## 消息传递
+
+===> @/mixins/emitter.js
+
 ## 组件实践
 
 elementUI 表单提交组件简版的实现，它几乎涵盖了，我们以上分享的所有内容。一个很典型的组件实现的例子。
@@ -418,177 +442,30 @@ elementUI 表单提交组件简版的实现，它几乎涵盖了，我们以上�
 
 ## 弹窗组件
 
-> 意义?
 > [参考博文](https://blog.csdn.net/wwwqiaoling/article/details/105077832)
+
+### 特点
+
+弹窗这类组件的特点是它们在当前vue实例例之外独⽴立存在，通常挂载于body; 它们是通过JS动态创建 的，不需要在任何组件中声明。通常类似的使用姿势:
+
+```javascript
+this.$create(Notice, {
+      title: '我是一个弹窗哦',
+      message: '提示信息', 
+      duration: 1000
+}).show();
+```
+
+### 实现思路
 
 思路（实现全局 Notice 组件）：
 1、首先我得有一个 Notice 组件的配置，也就是 Notice.vue 文件。
 2、要把 Notice 组件直接挂在到 body 下，用 render 函数实现。
 3、全局引用，通过 vue 插件方式引入。
 
+===> 代码实例 @components/notice
+
+
 ## 递归组件
 
-## 消息传递
-
-## vue 流程初步认识
-
-### 1. vue 工作流程图
-
-![alt vue工作流程图](http://ttpcstatic.dftoutiao.com/ecms/image/20200803/767x549_7869741f.png_.webp)
-
-- **初始化**
-  初始化 data、props、事件等。
-- **挂载**
-  执行编译、首次渲染、创建和追加过程
-- **编译**
-  编译模块分为三个阶段：parse、optimize、generate
-- **数据响应式**
-  渲染函数执行时会触发 getter 进行依赖收集、将来数据变化时会触发 setter 进行更新。
-- **虚拟 dom**
-  通过 JS 对象描述 dom，数据变更时，映射为 dom 操作。
-
-```bash
-<!-- dom -->
-<div name="toutiao" style="color:pink" @click="xx">
-<a>Click me</a>
-</div>
-
-<!-- vdom -->
-{
-tag:'div',
-props: {
-  name:'toutiao',
-  style: {color:'red'},
-  onClick:xx
-}
-children: [
-  {
-    tag: 'a',
-    text: 'click me'
-  }
-]
-}
-```
-
-- **更新视图**
-  数据修改时监听器会执行更新，通过对比新旧 vdom，得到最小修改，就是 patch。
-
-### 2. vue 响应式原理
-
-```html
-<div id="app">
-  <p>你好，<span id="name"></span></p>
-</div>
-
-<script>
-  var obj = {};
-  Object.defineProperty(obj, 'name', {
-    get() {
-      console.log('获取name');
-      return document.querySelector('#name').innerHTML;
-    },
-    set(nick) {
-      console.log('设置name');
-      document.querySelector('#name').innerHTML = nick;
-    },
-  });
-  obj.name = 'Jerry';
-  console.log(obj.name);
-</script>
-```
-
-### 3、vue 实现
-
-- **简版架构图**
-- **设置属性方法**
-  创建 kvue.js
-
-  ```javascript
-  // 创建kvue.js
-  // new KVue({
-  //  data: {
-  //    msg: 'hello vue'
-  //  }
-  // })
-
-  class KVue {
-    constructor(options) {
-      // 缓存配置项
-      this.$options = options;
-      // 提出data
-      this.$data = options.data;
-      // 响应化
-      this.oberve(this.$data);
-    }
-
-    observe(data) {
-      // 做一层简单的过滤处理
-      if (!data || typeof data !== 'object') return;
-      // 遍历，执行数据响应式
-      Object.keys(data).forEach((key) => {
-        this.defineReactive(data, key, data[key]);
-      });
-    }
-
-    defineReactive(data, key, val) {
-      // 递归
-      this.observe(val);
-      // 给obj定义属性
-      Object.defineProperty(data, key, {
-        get() {
-          return val;
-        },
-        set(newval) {
-          if (newval === val) return;
-          val = newval;
-          console.log(`${key}属性更新了`);
-        },
-      });
-    }
-  }
-  ```
-
-  创建 index.html
-
-  ```html
-  <script src="kvue.js"></script>
-  <script>
-    const app = new KVue({
-      data: {
-        test: 'I am test',
-        foo: {
-          bar: 'A1',
-        },
-      },
-    });
-    app.$data.test = 'DFZX';
-    app.$data.foo.bar = 'A2';
-  </script>
-  ```
-
-- **给\$data 做代理（kvue.js）**
-
-```javascript
-observe(data) {
-  ...
-  Object.keys(data).forEach(key => {
-    this.defineReactive(data,key,data[key]);
-    // 将data中的属性代理到vue实例上(vue根)
-    this.proxyData(key);
-  });
-
-  // 在vue根上定义属性代理data中的数据
-  proxyData(key) {
-    Object.defineProperty(this, key, {
-      get() {
-        return this.$data[key];
-      },
-      set(newval) {
-        this.$data[key] = newval;
-      }
-    })
-  }
-}
-```
-
-- **依赖收集与追踪**
+===> 代码实例 @components/recursion
