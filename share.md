@@ -184,6 +184,7 @@ this.$bus.$emit('foo', handle);
 ## 混入
 
   - **使用场景:**
+  
   > - 1、有两个或多个非常相似的组件，他们基本功能差不多，但是他们之间存在差异足够的差异性。
 
   > - 2、**如果我们把它们拆分n个不同组件?** 这样我们可能一旦功能变动，就得承担多个文件中更新代码的风险，也违背了DRY原则。
@@ -194,6 +195,7 @@ this.$bus.$emit('foo', handle);
   ===> 代码实例 @components/mixincom
 
   - **合并问题**
+  
     - 1、组件与mixin都定义相同的生命周期钩子函数。
     > 默认mixin定义的钩子会先执行，接着才是组件的生命周期钩子函数。组件拥有最终发言权。其实只不过是重写这个生命钩子函数。
     - 2、组件与mixin定义相同其它非钩子函数。
@@ -201,9 +203,78 @@ this.$bus.$emit('foo', handle);
 
   其它，根组件的混入。后续实例
 
-## 消息传递
+## 消息传递 (派发与广播)
+    
+
+### 派发， 往上派发。
+
+- 曾孙组件GrandGrandChild1
+
+```html
+<template>
+  <button @click="dispathHandler">
+    dispatch
+  </button>
+</template>
+
+<script>
+  methods: {
+    dispathHandler() {
+      this.$dispatch('dispatch', '哈喽 我是GrandGrandChild1')
+    }
+  }
+</script>
+```
+
+- 子组件Child1
+
+```html
+<script>
+  mounted: {
+    this.$on("dispatch", msg => {
+      this.msg = "接收dispatch消息:" + msg;
+    });
+  }
+</script>
+```
+
+### 广播， 往下广播。
+
+- 子组件Child1
+
+```html
+<template>
+  <button @click="boardcastHandler">广播子元素</button>
+</template>
+
+<script>
+  methods: {
+    boardcastHandler() {
+      this.$boardcast('boardcast','我是Child1');
+    }
+  }
+</script>
+```
+
+- 曾孙组件GrandGrandChild1
+  
+```html
+<script>
+  mounted: {
+    this.$on("boardcast", msg => {
+      this.msg = "接收boardcast消息:" + msg;
+    });
+  }
+</script>
+```
 
 ===> @/mixins/emitter.js
+
+### 特点
+
+1、主要正对组件间的跨级通讯。      
+2、通常使用场景，当我们在独立组件开发或库，不会依赖第三方库。 
+3、他是通过
 
 ## 组件实践
 
