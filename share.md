@@ -273,7 +273,7 @@ this.$bus.$emit('foo', handle);
 ### 特点
 
 1、主要正对组件间的跨级通讯。      
-2、通常使用场景，当我们在独立组件开发或库，不会依赖第三方库。 
+2、通常使用场景，当我们在独立组件开发或库，不会依赖第三方库。 [elementUI](源码例子)
 3、特别的，广播、派发是"组件间的通讯"，===> 线性通讯。
 
 ## 组件实践
@@ -533,10 +533,116 @@ this.$create(Notice, {
 1、首先我得有一个 Notice 组件的配置，也就是 Notice.vue 文件。
 2、要把 Notice 组件直接挂在到 body 下，用 render 函数实现。
 3、全局引用，通过 vue 插件方式引入。
-
 ===> 代码实例 @components/notice
+
+### 代码实现
 
 
 ## 递归组件
 
 ===> 代码实例 @components/recursion
+
+- **递归组件**
+  
+```html
+<template>
+  <li>
+    <div @click="toggle">
+      {{ data.title }}
+      <span v-if="isFolder">[{{ open ? '-' : '+' }}]</span>
+    </div>
+    <!-- 必须有结束条件 -->
+    <ul v-show="open" v-if="isFolder">
+      <Node v-for="d in data.children" :key="d.id" :data="d"></Node>
+    </ul>
+  </li>
+</template>
+
+<script>
+export default {
+  name: 'Node', // name对递归组件是必要的
+  data() {
+    return {
+      open: false,
+    }
+  },
+  props: {
+    data: {
+      type: Object,
+      require: true,
+    },
+  },
+  methods: {
+    toggle() {
+      if (this.isFolder) {
+        this.open = !this.open
+      }
+    },
+  },
+  computed: {
+    isFolder() {
+      return this.data.children && this.data.children.length
+    },
+  },
+}
+</script>
+
+```
+
+- **使用方式**
+  
+```html
+<template>
+  <div class="coms-recursion">
+    <ul>
+      <Node :data="data"></Node>
+    </ul>
+  </div>
+</template>
+
+<script>
+import Node from './Node.vue'
+export default {
+  data() {
+    return {
+      data: {
+        id: '1',
+        title: '递归组件',
+        children: [
+          {
+            id: '1-1',
+            title: '使用方法',
+            children: [
+              { id: '1-1-1', title: '使用方法1' },
+              { id: '1-1-2', title: '使用方法2' },
+              { id: '1-1-3', title: '使用方法3' },
+            ],
+          },
+          {
+            id: '1-2',
+            title: '注意事项',
+            children: [
+              { id: '1-2-1', title: '注意事项1' },
+              { id: '1-2-2', title: '注意事项2' },
+            ],
+          },
+          {
+            id: '1-3',
+            title: '使用场景',
+          },
+        ],
+      },
+    }
+  },
+  components: {
+    Node,
+  },
+}
+</script>
+```
+
+- **特别的**
+  1、递归组件一定要设置name。
+  2、必须要有结束条件，不然死循环，内存溢出。
+  3、一般，我们自己在封装一些业务的时候，碰到这种树形结构数据的时候，会考虑递归。电商类业务会用的比较多。
+  4、一般有明显（确定）层次的树形数据构，正常的循环就能满足需求，就没必要考虑递归。
