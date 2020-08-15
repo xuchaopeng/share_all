@@ -24,7 +24,7 @@ class Compiler {
     Array.from(childNodes).forEach((node) => {
       // 判断节点类型
       if (this.isElement(node)) {
-        // 1. 如果节点类型是 元素 <div></div>
+        // 1. 如果节点类型是 元素节点 通俗就是html中标签 <div></div>
         console.log('编译元素' + node.nodeName);
         this.compileElement(node);
       } else if (this.isInter(node)) {

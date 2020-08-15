@@ -34,6 +34,7 @@ class KVue {
     // 给data定义属性方法 (set、get)
     Object.defineProperty(data, key, {
       get() {
+        console.log(`${key}属性被获取了`);
         return val;
       },
       set(newval) {

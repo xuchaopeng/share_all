@@ -70,7 +70,7 @@ class KVue {
 
 /**
  * 作用：同$data中的每一个key对应起来，主要负责管理相关watcher
- * 1. data属性 与 Dep 是 1对1的关系，每一个$data中的属性，对应一个实例化Dep
+ * 1. data属性 与 Dep 是 1对1的关系，每一个data中的属性，对应一个实例化Dep
  */
 class Dep {
   constructor() {
