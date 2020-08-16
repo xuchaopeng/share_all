@@ -54,6 +54,14 @@ class Compiler {
   }
 
   // 负责更新dom
+  /**
+   * name   {{name}}
+   *
+   * @param {*} node
+   * @param {*} exp   name
+   * @param {*} dir
+   * @memberof Compiler
+   */
   update(node, exp, dir) {
     // 首次，初始化
     const updaterFn = this[dir + 'Updater'];
@@ -77,7 +85,7 @@ class Compiler {
       const attrName = attr.name; // 得到属性名称 k-text
       const exp = attr.value; // 得到属性值 exp
       if (this.isDirective(attrName)) {
-        // 截取指令的名字
+        // 截取指令的名字v-html html v-text
         const dir = attrName.substring(2);
         // 执行相应更新函数
         this[dir] && this[dir](node, exp);

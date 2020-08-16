@@ -4,17 +4,18 @@
 
 ![alt vue工作流程图](http://ttpcstatic.dftoutiao.com/ecms/image/20200803/767x549_7869741f.png_.webp)
 
-- **初始化**
-  Vue会调用init函数进行初始化 生命周期、data、props、事件等。
-- **挂载**
-  执行编译、首次渲染、创建和追加过程。
-- **编译**
-  编译模块分为三个阶段：parse、optimize、generate
-- **数据响应式**
-  渲染函数执行时会触发 getter 进行依赖收集、将来数据变化时会触发 setter 进行更新。
-- **虚拟 dom**
-  通过 JS 对象描述 dom，数据变更时，映射为 dom 操作。
+**初始化流程线**
+- 1、实例化一个Vue构造函数, 内部会调用一个_init函数, 初始化data、props、事件及生命周期等。
+- 2、调用实例上$mounted方法（挂载过程），这个过程有编译执行、首次渲染、创建及DOM的追加。其实可以认为就是一个虚拟DOM的计算过程。
+- 3、虚拟DOM通过执行rander函数得到的，在rander函数之前有个compile编译过程。平时写的template就是在定义render函数。
+- 4、compile过程有个3个阶端。parse(正则解析),既然解析出template中定义的插值语法、属性、指令、及方法;optimize(标记静态节点),generate（生成rander）。
+- 5、patch过程，虚拟DOM的计算过程，牛B的diff算法就在这个过程实现的。
 
+**更新操作**
+  - 1、render执行过程中，触发这个getter，通过watcher类来进行属性的依赖收集，当属性变化时，触发这个setter , 通知watcher该属性对应依重新执行，再到$patch过程，从而映射到真实的DOM。
+  
+**虚拟 dom**
+  通过 JS 对象描述 dom，数据变更时，映射为 dom 操作。
 ```bash
 <!-- dom -->
 <div name="toutiao" style="color:pink" @click="xx">
@@ -38,7 +39,7 @@ children: [
 }
 ```
 
-- **更新视图**
+**patch过程**
   数据修改时监听器会执行更新，通过对比新旧 `vdom`，得到最小修改，就是`patch`。
 
 [参考文章](https://www.cnblogs.com/ming1025/p/13091678.html)
@@ -72,10 +73,15 @@ children: [
 
 ### 3、vue 实现
 
-- **简版架构图**
-  ![实现思路](http://ttpcstatic.dftoutiao.com/ecms/image/20200813/759x413_acbcbf41.png_.webp)
+- **实现思路**
+  Watcher类：负责创建data中key和更新函数的映射关系。<br>
+  Dep类：同data中的每一个key一一对应起来，主要负责管理相关Watcher类。<br>
+  Compiler类: 模版编译、解析。<br>
+  KVue类: 初始化处理，属性劫持，这个一个入口类，以上3个类最初都是通过它实例化的。<br>
+  **特别的**
+  data中的属性与Dep是1对1关系。它与Watcher是1对多的关系，因为一个属性可以在多个地方使用，每一个使用的地方需要建立一个依赖。
 
-- **设置属性方法**
+- **第一阶段 设置属性方法**
   创建 kvue.js
 
   ```javascript
@@ -134,7 +140,7 @@ children: [
   </script>
   ```
 
-- **给\$data 做代理（kvue.js）**
+- **第二阶段 \$data 做代理（kvue.js）**
 
 ```javascript
 observe(data) {
@@ -158,10 +164,11 @@ observe(data) {
   }
 }
 ```
-
-- **依赖收集与追踪**
+- **第三阶段 新建两个类Dep(大管家)，Watcher(观察者)**
   看实例源码。
-  
+- **第四阶段 依赖收集与追踪**
+  看实例源码。
+
 - **回顾总结**
   ![总结流程图](http://ttpcstatic.dftoutiao.com/ecms/image/20200813/841x417_5b04f027.png_.webp)
 
