@@ -1,41 +1,41 @@
 <template>
   <div id="app">
     <h2>Parent</h2>
-    <h3>{{msg}}</h3>
+    <h3>{{ msg }}</h3>
     <child1 :title="title1" @getmsg="getmsg"></child1>
     <child2></child2>
   </div>
 </template>
 
 <script>
-import Child1 from "@/components/communicate/Child1";
-import Child2 from "@/components/communicate/Child2";
+import Child1 from '@/components/communicate/Child1'
+import Child2 from '@/components/communicate/Child2'
 export default {
-  name: "app",
+  name: 'communicate',
   provide: {
-    woniu: "我是骚气的Jerry老师"
+    woniu: '我是骚气的Jerry老师',
   },
   data() {
     return {
-      msg: "",
-      title1: "我是你爸爸"
-    };
+      msg: '',
+      title1: '我是你爸爸',
+    }
   },
   methods: {
     getmsg(msg) {
-      this.msg = msg;
-    }
+      this.msg = msg
+    },
   },
   components: { Child1, Child2 },
   mounted() {
-    this.$on("dispatch", msg => {
-      this.msg = "接收dispatch消息:" + msg;
-    });
-    this.$bus.$on("event-bus", msg => {
-      this.msg = "接收event-bus消息:" + msg;
-    });
-  }
-};
+    this.$on('dispatch', (msg) => {
+      this.msg = '接收dispatch消息:' + msg
+    })
+    this.$bus.$on('event-bus', (msg) => {
+      this.msg = '接收event-bus消息:' + msg
+    })
+  },
+}
 </script>
 <style scoped>
 div {

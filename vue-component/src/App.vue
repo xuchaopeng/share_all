@@ -24,14 +24,13 @@
 </template>
 
 <script>
-// import Communicate from "@/components/communicate";
+import Communicate from '@/components/communicate'
 // import SlotTest from "@/components/slots";
 // import Mixincom from '@/components/mixincom'
 // import FormTest from '@/components/form'
 // import Recursion from '@/components/recursion'
 // import Notice from '@/components/notice';
 // import Tree from '@/components/tree'
-
 
 export default {
   name: 'app',
@@ -41,7 +40,7 @@ export default {
     }
   },
   components: {
-    // Communicate,
+    Communicate,
     // SlotTest,
     // Mixincom,
     // FormTest,
