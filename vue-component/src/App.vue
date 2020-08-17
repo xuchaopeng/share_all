@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!-- 一、组件通信 -->
-    <!-- <Communicate></Communicate> -->
+    <Communicate></Communicate>
 
     <!-- 二、组件插槽 -->
     <!-- <SlotTest></SlotTest> -->
@@ -13,26 +13,25 @@
     <!-- <form-test></form-test> -->
 
     <!-- 四、递归组件 -->
-    <Recursion></Recursion>
+    <!-- <Recursion></Recursion> -->
 
     <!-- 五、全局弹窗组件 -->
     <!-- <Notice></Notice> -->
 
     <!-- 六、树形组件 -->
     <!-- <Tree></Tree> -->
-
-    <!-- 七、组件消息机制 -->
   </div>
 </template>
 
 <script>
-// import Notice from '@/components/notice';
 // import Communicate from "@/components/communicate";
 // import SlotTest from "@/components/slots";
 // import Mixincom from '@/components/mixincom'
-import Recursion from '@/components/recursion'
-// import Tree from '@/components/tree'
 // import FormTest from '@/components/form'
+// import Recursion from '@/components/recursion'
+// import Notice from '@/components/notice';
+// import Tree from '@/components/tree'
+
 
 export default {
   name: 'app',
@@ -46,7 +45,7 @@ export default {
     // SlotTest,
     // Mixincom,
     // FormTest,
-    Recursion,
+    // Recursion,
     // Notice,
     // Tree
   },
