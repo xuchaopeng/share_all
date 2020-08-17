@@ -1,37 +1,28 @@
 <template>
-    <div>
-        <h2>Child2</h2>
-        <h3>{{msg}}</h3>
-        <grand-child1>
-        </grand-child1>
-    </div>
+  <div class="com-child2">
+    <h3>Child2</h3>
+    <p>{{ title }}</p>
+  </div>
 </template>
+
 <script>
-import GrandChild1 from '@/components/communicate/GrandChild1'
 export default {
-    name:'Child2',
-
-    props:['title'],
-    data(){
-        return {
-            msg:""
-        }
-    },
-    components:{
-        GrandChild1,
-    },
-    methods:{
-        toParent(){
-            this.$emit('getmsg','爸爸,我知道错了')
-        }
-    },
-    mounted(){
-
-        this.$on("dispatch",msg=>{
-            this.msg = '接收dispatch消息:'+ msg
-        })
+  name: 'com-child2',
+  data() {
+    return {
+      title: '',
     }
-    
+  },
 }
 </script>
 
+<style lang="less" scoped>
+.com-child2 {
+  border: 2px solid blue;
+  font-size: 14px;
+  padding: 5px;
+  h3 {
+    font-size: 16px;
+  }
+}
+</style>

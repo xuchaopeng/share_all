@@ -1,42 +1,39 @@
 <template>
-  <div>
-    <h2>Child1</h2>
+  <div class="com-child1">
+    <h3>Child1</h3>
     <p>{{ title }}</p>
-    <h3>{{ msg }}</h3>
-    <button @click="toParent">传递到父元素</button>
-    <button @click="$boardcast('boardcast', '我是Child1')">广播子元素</button>
-    <grand-child1></grand-child1>
-    <grand-child2></grand-child2>
+    <p>{{ $attrs.name }}</p>
+    <p v-bind="$attrs"></p>
   </div>
 </template>
-<script>
-import GrandChild1 from '@/components/communicate/GrandChild1'
-import GrandChild2 from '@/components/communicate/GrandChild2'
 
+<script>
 export default {
-  name: 'Child1',
-  props: ['title'],
-  data() {
-    return {
-      msg: '',
-    }
-  },
-  components: {
-    GrandChild1,
-    GrandChild2,
-  },
-  methods: {
-    toParent() {
-      this.$emit('getmsg', '爸爸,我知道错了')
+  name: 'com-child1',
+  // inheritAttrs: false,
+  props: {
+    title: {
+      type: String,
     },
   },
-  mounted() {
-    this.$on('dispatch', (msg) => {
-      this.msg = '接收dispatch消息:' + msg
-    })
-    this.$bus.$on('event-bus', (msg) => {
-      this.msg = '接收event-bus消息:' + msg
-    })
+  data() {
+    return {}
   },
 }
 </script>
+
+<style lang="less" scoped>
+.com-child1 {
+  border: 2px solid blue;
+  font-size: 14px;
+  padding: 5px;
+  p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 16px;
+  }
+  h3 {
+    font-size: 16px;
+  }
+}
+</style>

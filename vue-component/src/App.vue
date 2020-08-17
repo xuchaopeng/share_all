@@ -34,11 +34,11 @@ import Communicate from '@/components/communicate'
 
 export default {
   name: 'app',
-  provide() {
-    return {
-      foo: 'foo',
-    }
-  },
+  // provide() {
+  //   return {
+  //     foo: 'foo',
+  //   }
+  // },
   components: {
     Communicate,
     // SlotTest,

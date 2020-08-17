@@ -1,56 +1,40 @@
 <template>
-  <div id="app">
-    <h2>Parent</h2>
-    <h3>{{ msg }}</h3>
-    <child1 :title="title1" @getmsg="getmsg"></child1>
-    <child2></child2>
+  <div id="communicate" class="communicate">
+    <h3>parent</h3>
+    <!-- 第一个子组件 -->
+    <Child1 :title="title1" name="c1"></Child1>
+    <div class="line"></div>
+    <!-- 第二个子组件 -->
+    <Child2 ref="c2"></Child2>
   </div>
 </template>
 
 <script>
-import Child1 from '@/components/communicate/Child1'
-import Child2 from '@/components/communicate/Child2'
+import Child1 from '@/components/communicate/child1.vue'
+import Child2 from '@/components/communicate/child2.vue'
 export default {
   name: 'communicate',
-  provide: {
-    woniu: '我是骚气的Jerry老师',
+  components: {
+    Child1,
+    Child2,
   },
   data() {
     return {
-      msg: '',
-      title1: '我是你爸爸',
+      title1: 'child1的title',
     }
   },
-  methods: {
-    getmsg(msg) {
-      this.msg = msg
-    },
-  },
-  components: { Child1, Child2 },
   mounted() {
-    this.$on('dispatch', (msg) => {
-      this.msg = '接收dispatch消息:' + msg
-    })
-    this.$bus.$on('event-bus', (msg) => {
-      this.msg = '接收event-bus消息:' + msg
-    })
+    this.$refs.c2.title = '大佬们'
+    // this.$children[1].title = 'child2的title';
   },
 }
 </script>
-<style scoped>
-div {
-  border: 3px blue solid;
-  padding: 10px;
-  display: inline-block;
-  vertical-align: top;
+<style lang="less" scoped>
+.communicate {
+  border: 2px solid #ec4b4b;
+  padding: 8px;
 }
-h1,
-h2 {
-  font-size: 18px;
-  margin: 5px 0;
-}
-h3 {
-  color: red;
-  font-size: 14px;
+.line {
+  height: 5px;
 }
 </style>
