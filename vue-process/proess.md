@@ -79,7 +79,7 @@ children: [
   Compiler类: 模版编译、解析。<br>
   KVue类: 初始化处理，属性劫持，这个一个入口类，以上3个类最初都是通过它实例化的。<br>
   **特别的**
-  data中的属性与Dep是1对1关系。它与Watcher是1对多的关系，因为一个属性可以在多个地方使用，每一个使用的地方需要建立一个依赖。
+  data中的属性与Dep是1对1关系。它与Watcher是1对多的关系，因为从客观上，一个属性可以在多个地方使用，然而每一个使用的地方需要建立一个依赖。
 
 - **第一阶段 设置属性方法**
   创建 kvue.js
@@ -166,9 +166,315 @@ observe(data) {
 ```
 - **第三阶段 新建两个类Dep(大管家)，Watcher(观察者)**
   看实例源码。
-- **第四阶段 依赖收集与追踪**
-  看实例源码。
+- **第四阶段 依赖收集与追踪（完整源码实现）**
+  - index.html
+  ```html
+  <div id="app">
+      <p>{{name}}</p>
+      <p k-text="name"></p>
+      <p>{{age}}</p>
+      <input type="text" k-model="name" />
+      <button @click="changeName">点击</button>
+      <div k-html="html"></div>
+  </div>
+  
+    <script src="./compiler.js"></script>
+    <script src="./kvue.js"></script>
+    <script>
+      let app = new KVue({
+        el: '#app',
+        data: {
+          name: 'A',
+          age: 30,
+          html: '<button>这是一个按钮</button>',
+        },
+        created() {
+          console.log('开始了');
+          setTimeout(() => {
+            this.name = '我是测试';
+          }, 1500);
+        },
+        methods: {
+          changeName() {
+            this.name = 'Hi，兄弟们';
+            this.age = 18;
+          },
+        },
+      });
+    </script>
+  ```
+  - **compiler.js**
+  ```javascript
+  /**
+   * 作用：模版编译、解析
+   * 1. 遍历模版，分析其中那些地方用到了data中的key以及事件指令
+   */
+  class Compiler {
+    /**
+     * 初始化
+     * @param {*} el 宿主元素
+     * @param {*} vm KVue实例
+     */
+    constructor(el, vm) {
+      this.$vm = vm;
+      this.$el = document.querySelector(el);
+      // 开始编译
+      this.compile(this.$el);
+    }
 
+    /**
+     * 开始编译模版
+     * @param {*} el 宿主元素,原生DOM对象
+     */
+    compile(el) {
+      const childNodes = el.childNodes; // 获取DOM对象的子节点
+      Array.from(childNodes).forEach((node) => {
+        // 判断节点类型
+        if (this.isElement(node)) {
+          // 1. 如果节点类型是 元素节点 通俗就是html中标签 <div></div>
+          console.log('编译元素' + node.nodeName);
+          this.compileElement(node);
+        } else if (this.isInter(node)) {
+          // 2. 如果节点类型是 插值文本 {{xx}}
+          console.log('编译插值文本' + node.textContent);
+          this.compileText(node);
+        }
+
+        // 递归可能存在的子元素
+        this.compile(node);
+      });
+    }
+
+    // 是否是元素节点
+    isElement(node) {
+      return node.nodeType === 1;
+    }
+
+    // 是否是插值表达式 ：是文本节点并且符合正则
+    isInter(node) {
+      return node.nodeType === 3 && /\{\{(.*)\}\}/.test(node.textContent);
+    }
+
+    //编译文本
+    compileText(node) {
+      this.update(node, RegExp.$1, 'text');
+    }
+
+    /**
+     * name   {{name}}
+     * @param {*} node
+     * @param {*} exp   name
+     * @param {*} dir
+     * @memberof Compiler
+     */
+    update(node, exp, dir) {
+      // 首次，初始化
+      const updaterFn = this[dir + 'Updater'];
+      updaterFn && updaterFn(node, this.$vm[exp]);
+      // 更新 挂钩操作
+      // 1、回调函数什么时候执行 ?
+      new Watcher(this.$vm, exp, function (value) {
+        updaterFn && updaterFn(node, value);
+      });
+    }
+
+    textUpdater(node, value) {
+      node.textContent = value;
+    }
+
+    //编译元素
+    compileElement(node) {
+      const nodeAttrs = node.attributes; // 获取节点上的属性
+      Array.from(nodeAttrs).forEach((attr) => {
+        // k-text="exp"
+        const attrName = attr.name; // 得到属性名称 k-text
+        const exp = attr.value; // 得到属性值 exp
+        if (this.isDirective(attrName)) {
+          // 截取指令的名字v-html html v-text
+          const dir = attrName.substring(2);
+          // 执行相应更新函数
+          this[dir] && this[dir](node, exp);
+        }
+
+        // 如果是事件指令
+        if (this.isEvent(attrName)) {
+          // @click="onClick"
+          const dir = attrName.substring(1);
+          // exp 是onclick
+          this.eventHandler(node, exp, dir);
+        }
+      });
+    }
+
+    // 是否是指令
+    isDirective(attr) {
+      return attr.indexOf('k-') == 0;
+    }
+    // 是否是事件
+    isEvent(attr) {
+      return attr.indexOf('@') == 0;
+    }
+    // k-text指令
+    text(node, exp) {
+      this.update(node, exp, 'text');
+    }
+    // k-html
+    html(node, exp) {
+      this.update(node, exp, 'html');
+    }
+
+    htmlUpdater(node, value) {
+      node.innerHTML = value;
+    }
+
+    // k-model指令
+    model(node, exp) {
+      // 复制
+      this.update(node, exp, 'model');
+      //事件监听
+      node.addEventListener('input', (e) => {
+        this.$vm[exp] = e.target.value;
+      });
+    }
+
+    modelUpdater(node, value) {
+      node.value = value;
+    }
+
+    // 事件操作
+    eventHandler(node, exp, dir) {
+      const fn = this.$vm.$options.methods && this.$vm.$options.methods[exp];
+      if (fn) {
+        node.addEventListener(dir, fn.bind(this.$vm));
+      }
+    }
+  }
+  ```
+  - **kuve.js**
+  ```javascript
+    /**
+   * 1. 新创建两个类：Dep(大管家)、Watcher(观察者)
+   * 2. Dep: 同data中的每一个key一一对应起来，主要负责管理相关watcher
+   * 3. Watcher: 负责创建data中key和更新函数的映射关系
+   * */
+
+  class KVue {
+    constructor(options) {
+      // 缓存配置项
+      this.$options = options;
+      // 缓存data
+      this.$data = options.data;
+      // 响应化，属性代理
+      this.observe(this.$data);
+      //依赖收集
+      new Compiler(options.el, this);
+      // 测试
+      // new Watcher(this, 'name');
+      // this.name; // 访问下name, 触发了其get属性方法
+
+      //执行钩子函数
+      if (options.created) {
+        options.created.call(this);
+      }
+    }
+
+    /**
+     * {
+     *   name: 'A',
+     *   foo: { a: 1}
+     * }
+     * @param {*} data
+     */
+    observe(data) {
+      // 做一层简单的过滤处理
+      if (!data || typeof data !== 'object') return;
+      // 遍历对象的属性，设置属性方法
+      Object.keys(data).forEach((key) => {
+        this.defineReactive(data, key, data[key]);
+        // 将data中的属性代理到vue实例上(vue根)
+        this.proxyData(key);
+      });
+    }
+
+    defineReactive(data, key, val) {
+      // 递归
+      this.observe(val);
+      // 创建Dep实例和key一一对应
+      const dep = new Dep();
+      // 给data定义属性方法 (set、get)
+      Object.defineProperty(data, key, {
+        get() {
+          // Dep.target 即为 Watcher实例
+          Dep.target && dep.addDep(Dep.target);
+          return val;
+        },
+        set(newval) {
+          if (newval === val) return;
+          val = newval;
+          // console.log(`${key}属性更新了`);
+          dep.notify(); // 通知更新
+        },
+      });
+    }
+
+    proxyData(key) {
+      Object.defineProperty(this, key, {
+        get() {
+          return this.$data[key];
+        },
+        set(newval) {
+          this.$data[key] = newval;
+        },
+      });
+    }
+  }
+
+  /**
+   * 作用：同$data中的每一个key对应起来，主要负责管理相关watcher
+   * 1. data属性 与 Dep 是 1对1的关系，每一个$data中的属性，对应一个实例化Dep
+   */
+  class Dep {
+    constructor() {
+      this.deps = [];
+    }
+    // 添加
+    addDep(dep) {
+      this.deps.push(dep);
+    }
+
+    // 通知
+    notify() {
+      this.deps.forEach((dep) => dep.update());
+    }
+  }
+
+  /**
+   *  作用：负责创建data中key和更新函数的映射关系
+   *  1. 假设我们的界面中，发现一个地方要用的一个属性，我们会new Watcher，读取下这个属性。get函数会触发，建立联系了。
+   */
+  class Watcher {
+    /**
+     * 初始化
+     * @param {*} vm  kvue实例
+     * @param {*} key 监听的属性
+     * @param {*} cb 回调
+     */
+    constructor(vm, key, cb) {
+      this.vm = vm;
+      this.key = key;
+      this.cb = cb;
+      Dep.target = this; // 把当前wather实例附加到Dep的静态属性上
+
+      this.vm[this.key]; // 触发依赖收集
+      Dep.target = null; // 放置性能问题
+    }
+
+    update() {
+      // console.log(`Watcher--${this.key}属性更新了`);
+      this.cb.call(this.vm, this.vm[this.key]);
+    }
+  }
+  ```
 - **回顾总结**
   ![总结流程图](http://ttpcstatic.dftoutiao.com/ecms/image/20200813/841x417_5b04f027.png_.webp)
 

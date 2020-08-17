@@ -46,7 +46,12 @@ class KVue {
       },
     });
   }
-
+  /**
+   * 访问中间键
+   * @param {*} key
+   * @returns
+   * @memberof KVue
+   */
   proxyData(key) {
     Object.defineProperty(this, key, {
       get() {
