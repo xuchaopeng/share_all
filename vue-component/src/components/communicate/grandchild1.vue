@@ -1,13 +1,25 @@
 <template>
   <div class="com-grandchild1">
     <h3>Grandchild1</h3>
-    <p></p>
+    <p>{{ mvp }}</p>
+    <p>{{ msg }}</p>
   </div>
 </template>
 
 <script>
 export default {
   name: 'com-grandchild1',
+  inject: ['mvp'],
+  data() {
+    return {
+      msg: '',
+    }
+  },
+  mounted() {
+    this.$bus.$on('event-bus', (msg) => {
+      this.msg = '接收event-bus消息:' + msg
+    })
+  },
 }
 </script>
 

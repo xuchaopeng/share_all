@@ -1,7 +1,7 @@
 <template>
   <div id="communicate" class="communicate">
-    <h3>communicate</h3>
-    <button class="btns">按钮</button>
+    <h3>communicate----{{ mvp }}</h3>
+    <button class="btns" @click="fbxx">发布$bus消息</button>
     <!-- 第一个子组件 -->
     <Child1 :title="title1" name="c1"></Child1>
     <div class="line"></div>
@@ -15,6 +15,11 @@ import Child1 from '@/components/communicate/child1.vue'
 import Child2 from '@/components/communicate/child2.vue'
 export default {
   name: 'communicate',
+  provide() {
+    return {
+      mvp: 'AAA',
+    }
+  },
   components: {
     Child1,
     Child2,
@@ -27,6 +32,11 @@ export default {
   mounted() {
     this.$refs.c2.title = '大佬们'
     // this.$children[1].title = 'child2的title';
+  },
+  methods: {
+    fbxx() {
+      this.$bus.$emit('event-bus', '来自远方的问候')
+    },
   },
 }
 </script>
