@@ -1,6 +1,7 @@
 <template>
   <div id="communicate" class="communicate">
-    <h3>parent</h3>
+    <h3>communicate</h3>
+    <button class="btns">按钮</button>
     <!-- 第一个子组件 -->
     <Child1 :title="title1" name="c1"></Child1>
     <div class="line"></div>

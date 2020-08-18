@@ -22,7 +22,7 @@
 
   1、默认情况下，调用组件时，传入一些没有在props中定义的属性（`非法属性`），会把这些`非法属性`渲染在组件的`根元素`上，然而这些非法属性会记录在$attrs属性上。<br>
 
-  2、通过组件内部设置`inheritAttrs:false`即可，避免非法属性渲染在组件根元素上。<br>
+  2、通过组件内部设置`inheritAttrs:false`即可，避免非法属性渲染在组件根元素上。(vue2.4.0新增)<br>
   
   3、通过v-bind="$attrs"可以把`非法`属性渲染到指定的组件内某个元素上。<br>
 
@@ -46,15 +46,19 @@
   ```
 
 - **子元素\$children**
+
   ```javascript
   // parent
   this.$children[0].name = '各位小伙伴们';
   ```
+
   > **特别的：子元素是不保证顺序的，尤其是存在多个子组件，并且有异步组件的时候。**
 
 ### 子组件 => 父组件
 
 - **自定义事件**
+  
+  父组件定义事件，子组件派发事件，并传递数据。
 
   ```javascript
   // Child
@@ -73,7 +77,9 @@
 ### 兄弟组件<=>兄弟组件
 
 - **通过共同的祖辈组件**
+  
   > 通过共同的祖辈组件搭桥，$parent 或 $root
+
   ```javascript
   // brother1
   this.$parent.$on('foo', handle);
@@ -83,55 +89,65 @@
 
 ### 祖先组件 => 后代组件
 
-> 由于嵌套层数过多，传递 props 不切实际，vue 给我们提供了 provide/inject API 完成该任务。
+> 由于嵌套层数过多，传递 props不切实际，vue 给我们提供了 `provide/inject` 高级特性完成该任务。(vue 2.2.0之后新增的)<br />
+
+> 简单说，父级组件中通过`provide`来提供变量，然后在子组件中通过`inject`来注入变量。不论子组件有多深，只要调用`inject`就可以注入`provide`中的数据。
+
 
 ```javascript
-// 组先组件
+// 父级组件提供 'foo'
 provide() {
   return { foo: 'foo' }
 }
 
-// 后代组件
+// 子组件注入 'foo'
 inject: ['foo']
 ```
 
-> **特别的：只能祖先给后代传值**
+ **注意：**
+
+ - 1、只能祖先给后代传值。<br>
+
+ - 2、通常在开发高阶插件/组件库时使用。
 
 ### 任意两个组件之间
 
 - **事件总线**
-- **创建一个类负责事件派发、监听与回调管理**
-
-```javascript
-// 事件派发、监听和回调管理
-class Bus {
-  constructor() {
-    this.callbacks = {};
-  }
-  $on(name, fn) {
-    this.callbacks[name] = this.callbacks[name] || [];
-    this.callbacks[name].push(fn);
-  }
-  $emit(name, args) {
-    if (this.callbacks[name]) {
-      this.callbacks[name].forEach((cb) => cb(args));
+  - 创建一个类负责事件派发、监听与回调管理
+  
+  ```javascript
+  // 事件派发、监听和回调管理
+  class Bus {
+    constructor() {
+      this.callbacks = {};
+    }
+    $on(name, fn) {
+      this.callbacks[name] = this.callbacks[name] || [];
+      this.callbacks[name].push(fn);
+    }
+    $emit(name, args) {
+      if (this.callbacks[name]) {
+        this.callbacks[name].forEach((cb) => cb(args));
+      }
     }
   }
-}
 
-// 使用 main.js 挂在Vue原型上
-Vue.prototype.$bus = new Bus();
+  // 使用 main.js 挂在Vue原型上
+  Vue.prototype.$bus = new Bus();
 
-// Child1
-this.$bus.$on('foo', handle);
-// Child2
-this.$bus.$emit('foo', handle);
-```
+  // Child1
+  this.$bus.$on('foo', handle);
+  // Child2
+  this.$bus.$emit('foo', handle);
+  ```
 
-> **特别的：实践中，可以用 Vue 代替 Bus,因为 Vue 已实现了相应的功能**
+  - **注意**
+    - 1、实践中，可以用 Vue 代替 Bus,因为 Vue 已实现了相应的功能。
+    - 2、这是一种思路，其实我们在小程序中。
 
-- **vuex**
-  > 创建唯一的全局数据管理者 store，通过它管理数据并通知组件状态变更。这里不展开。工作中用的比较频繁。关于它的使用及实现原理，后续可作为一个专题来讲。
+- **引入vuex**
+  
+  &emsp;&emsp;创建唯一的全局数据管理者 store，通过它管理数据并通知组件状态变更。这里不展开。工作中用的比较频繁。关于它的使用及实现原理，后续可作为一个专题来讲。
 
 ## 插槽
 

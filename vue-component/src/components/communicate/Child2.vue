@@ -2,6 +2,7 @@
   <div class="com-child2">
     <h3>Child2</h3>
     <p>{{ title }}</p>
+    <button @click="clickhandler">通讯child1</button>
   </div>
 </template>
 
@@ -13,6 +14,11 @@ export default {
       title: '',
     }
   },
+  methods: {
+    clickhandler() {
+      this.$parent.$emit('foo', '来自child2的慰问')
+    },
+  },
 }
 </script>
 
@@ -22,7 +28,7 @@ export default {
   font-size: 14px;
   padding: 5px;
   h3 {
-    font-size: 16px;
+    font-size: 20px;
   }
 }
 </style>

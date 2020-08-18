@@ -4,10 +4,13 @@
     <p>{{ title }}</p>
     <p>{{ $attrs.name }}</p>
     <p v-bind="$attrs"></p>
+    <p>{{ msg }}</p>
+    <Grandchild1></Grandchild1>
   </div>
 </template>
 
 <script>
+import Grandchild1 from '@/components/communicate/grandchild1.vue'
 export default {
   name: 'com-child1',
   // inheritAttrs: false,
@@ -17,7 +20,18 @@ export default {
     },
   },
   data() {
-    return {}
+    return {
+      msg: 'A',
+    }
+  },
+  mounted() {
+    this.$parent.$on('foo', (a) => {
+      this.msg = a
+    })
+  },
+  methods: {},
+  components: {
+    Grandchild1,
   },
 }
 </script>
@@ -29,8 +43,8 @@ export default {
   padding: 5px;
   p {
     margin: 0;
-    font-size: 12px;
-    line-height: 16px;
+    font-size: 14px;
+    line-height: 20px;
   }
   h3 {
     font-size: 16px;
