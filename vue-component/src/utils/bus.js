@@ -1,3 +1,6 @@
+/**
+ * 发布-订阅模式 (观察者模式)
+ */
 export default class Bus {
   constructor() {
     // {

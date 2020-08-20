@@ -6,6 +6,7 @@ export const toggle =  {
  },
  methods: {
    toggleview() {
+     console.log('ccccc')
      this.isshow = !this.isshow;
    }
  },

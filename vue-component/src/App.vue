@@ -1,13 +1,13 @@
 <template>
   <div id="app">
     <!-- 一、组件通信 -->
-    <Communicate></Communicate>
+    <!-- <Communicate></Communicate> -->
 
     <!-- 二、组件插槽 -->
     <!-- <SlotTest></SlotTest> -->
 
     <!-- 三、混入 -->
-    <!-- <Mixincom></Mixincom> -->
+    <Mixincom></Mixincom>
 
     <!-- 三、组件实践，表单实例 -->
     <!-- <form-test></form-test> -->
@@ -24,9 +24,9 @@
 </template>
 
 <script>
-import Communicate from '@/components/communicate'
-// import SlotTest from "@/components/slots";
-// import Mixincom from '@/components/mixincom'
+// import Communicate from '@/components/communicate'
+// import SlotTest from '@/components/slots'
+import Mixincom from '@/components/mixincom'
 // import FormTest from '@/components/form'
 // import Recursion from '@/components/recursion'
 // import Notice from '@/components/notice';
@@ -40,9 +40,9 @@ export default {
   //   }
   // },
   components: {
-    Communicate,
+    // Communicate,
     // SlotTest,
-    // Mixincom,
+    Mixincom,
     // FormTest,
     // Recursion,
     // Notice,

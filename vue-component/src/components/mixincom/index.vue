@@ -1,18 +1,21 @@
 <template>
   <div>
-    <Comp1></Comp1>
+    <Child1></Child1>
+
     <div class="line"></div>
-    <Comp2></Comp2>
+
+    <Child2></Child2>
   </div>
 </template>
 
 <script>
-import Comp1 from '@/components/mixincom/comp1.vue'
-import Comp2 from '@/components/mixincom/comp2.vue'
+import Child1 from '@/components/mixincom/child1.vue'
+import Child2 from '@/components/mixincom/child2.vue'
 export default {
+  name: 'mixin',
   components: {
-    Comp1,
-    Comp2,
+    Child1,
+    Child2,
   },
 }
 </script>

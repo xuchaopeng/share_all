@@ -13,7 +13,7 @@
 <script>
 import { toggle } from '@/mixins/toggle'
 export default {
-  name: 'm-comp2',
+  name: 'mixin-child2',
   mixins: [toggle],
 }
 </script>

@@ -13,20 +13,21 @@
 <script>
 import { toggle } from '@/mixins/toggle'
 export default {
-  name: 'm-comp1',
+  name: 'mixin-child1',
   mixins: [toggle],
   data() {
     return {
-      isshow: true,
+      // isshow: true,
     }
   },
   methods: {
     toggleview() {
-      this.isshow = true
+      this.isshow = !this.isshow
+      // this.isshow = true
     },
   },
   mounted() {
-    console.log('*********************Comp2-mouted')
+    // console.log('*********************Comp2-mouted')
   },
 }
 </script>
