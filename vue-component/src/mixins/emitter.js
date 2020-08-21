@@ -1,5 +1,5 @@
 /*** 
- * 消息派发  往上派发，后代组件 ==> 父级组件
+ * 消息派发  自下往上派发，后代组件 ==> 父级组件
 */
 function $dispatch(eventName, data) {
   let parent = this.$parent;

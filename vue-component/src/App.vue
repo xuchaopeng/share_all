@@ -7,7 +7,7 @@
     <!-- <SlotTest></SlotTest> -->
 
     <!-- 三、混入 -->
-    <Mixincom></Mixincom>
+    <!-- <Mixincom></Mixincom> -->
 
     <!-- 三、组件实践，表单实例 -->
     <!-- <form-test></form-test> -->
@@ -16,7 +16,7 @@
     <!-- <Recursion></Recursion> -->
 
     <!-- 五、全局弹窗组件 -->
-    <!-- <Notice></Notice> -->
+    <Notice></Notice>
 
     <!-- 六、树形组件 -->
     <!-- <Tree></Tree> -->
@@ -26,10 +26,10 @@
 <script>
 // import Communicate from '@/components/communicate'
 // import SlotTest from '@/components/slots'
-import Mixincom from '@/components/mixincom'
+// import Mixincom from '@/components/mixincom'
 // import FormTest from '@/components/form'
 // import Recursion from '@/components/recursion'
-// import Notice from '@/components/notice';
+import Notice from '@/components/notice'
 // import Tree from '@/components/tree'
 
 export default {
@@ -42,10 +42,10 @@ export default {
   components: {
     // Communicate,
     // SlotTest,
-    Mixincom,
+    // Mixincom,
     // FormTest,
     // Recursion,
-    // Notice,
+    Notice,
     // Tree
   },
   mounted() {
