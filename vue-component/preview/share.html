@@ -1,0 +1,705 @@
+<html>
+  <head>
+	  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>i5ting_ztree_toc:share</title>
+		<link href="toc/style/github-bf51422f4bb36427d391e4b75a1daa083c2d840e.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="toc/style/github2-d731afd4f624c99a4b19ad69f3083cd6d02b81d5.css" media="all" rel="stylesheet" type="text/css"/>
+		<link href="toc/css/zTreeStyle/zTreeStyle.css" media="all" rel="stylesheet" type="text/css"/>
+	  <style>
+		pre {
+		    counter-reset: line-numbering;
+		    border: solid 1px #d9d9d9;
+		    border-radius: 0;
+		    background: #fff;
+		    padding: 0;
+		    line-height: 23px;
+		    margin-bottom: 30px;
+		    white-space: pre;
+		    overflow-x: auto;
+		    word-break: inherit;
+		    word-wrap: inherit;
+		}
+
+		pre a::before {
+		  content: counter(line-numbering);
+		  counter-increment: line-numbering;
+		  padding-right: 1em; /* space after numbers */
+		  width: 25px;
+		  text-align: right;
+		  opacity: 0.7;
+		  display: inline-block;
+		  color: #aaa;
+		  background: #eee;
+		  margin-right: 16px;
+		  padding: 2px 10px;
+		  font-size: 13px;
+		  -webkit-touch-callout: none;
+		  -webkit-user-select: none;
+		  -khtml-user-select: none;
+		  -moz-user-select: none;
+		  -ms-user-select: none;
+		  user-select: none;
+		}
+
+		pre a:first-of-type::before {
+		  padding-top: 10px;
+		}
+
+		pre a:last-of-type::before {
+		  padding-bottom: 10px;
+		}
+
+		pre a:only-of-type::before {
+		  padding: 10px;
+		}
+
+		.highlight { background-color: #ffffcc } /* RIGHT */
+		</style>
+  </head>
+  <body>
+	  <div>
+				<div style='width:25%;'>
+						<ul id="tree" class="ztree" style='width:100%'>
+
+						</ul>
+				</div>
+        <div id='readme' style='width:70%;margin-left:20%;'>
+          	<article class='markdown-body'>
+            	<h1 id="-">组件化实践</h1>
+<p>组件化是 vue 的核心思想，它能提高开发效率，方便重复使用，简化调试步骤，提高整个项目的可维护性，便于多人协同开发。</p>
+<h2 id="-">组件通讯</h2>
+<h3 id="-">父组件 =&gt; 子组件</h3>
+<ul>
+<li><p><strong>属性 props</strong></p>
+<pre><code class="lang-javascript">// Child
+props: {
+  msg: String;
+}
+
+// parent
+&lt;Child msg=&quot;各位大佬们&quot;&gt;&lt;/Child&gt;;
+</code></pre>
+</li>
+<li><p><strong>特性\$attrs</strong></p>
+<p>1、默认情况下，调用组件时，传入一些没有在 props 中定义的属性（<code>非法属性</code>），会把这些<code>非法属性</code>渲染在组件的<code>根元素</code>上，然而这些非法属性会记录在\$attrs 属性上。<br></p>
+<p>2、通过组件内部设置<code>inheritAttrs:false</code>即可，避免非法属性渲染在组件根元素上。(vue2.4.0 新增)<br></p>
+<p>3、通过 v-bind=&quot;\$attrs&quot;可以把<code>非法</code>属性渲染到指定的组件内某个元素上。<br></p>
+<pre><code class="lang-javascript">// Child: 未在props中声明的属性
+&lt;p&gt;{{$attrs.name}}&lt;/p&gt;
+
+// parent
+ &lt;Child msg=&quot;各位大佬们&quot; name=&quot;A&quot;&gt;&lt;/Child&gt;
+</code></pre>
+</li>
+<li><p><strong>引用 refs</strong></p>
+<pre><code class="lang-javascript">// parent
+&lt;Child ref=&quot;v1&quot;&gt;&lt;/Child&gt;
+
+mounted() {
+  this.$refs.v1.msg = &#39;兄弟们&#39;
+}
+</code></pre>
+</li>
+<li><p><strong>子元素\$children</strong></p>
+<pre><code class="lang-javascript">// parent
+this.$children[0].name = &#39;各位小伙伴们&#39;;
+</code></pre>
+<blockquote>
+<p><strong>特别的：子元素是不保证顺序的，尤其是存在多个子组件，并且有异步组件的时候。</strong></p>
+</blockquote>
+</li>
+</ul>
+<h3 id="-">子组件 =&gt; 父组件</h3>
+<ul>
+<li><p><strong>自定义事件</strong></p>
+<p>父组件定义事件，子组件派发事件，并传递数据。</p>
+<pre><code class="lang-javascript">// Child
+this.$emit(&#39;add&#39;, &#39;B&#39;); //&#39;add&#39;: 父组件指定的数据绑定的函数名称, &#39;B&#39;：子组件向父组件传递的数据
+
+// parent
+&lt;Child @add=&quot;addHandler&quot;&gt;&lt;/Child&gt;
+
+methods: {
+  addHandler(v) {
+    console.log(v) // &#39;B&#39;
+  }
+}
+</code></pre>
+</li>
+</ul>
+<h3 id="-">兄弟组件&lt;=&gt;兄弟组件</h3>
+<ul>
+<li><p><strong>通过共同的祖辈组件</strong></p>
+<blockquote>
+<p>通过共同的祖辈组件搭桥，$parent 或 $root</p>
+</blockquote>
+<pre><code class="lang-javascript">// brother1
+this.$parent.$on(&#39;foo&#39;, handle);
+// brother2
+this.$parent.$emit(&#39;foo&#39;);
+</code></pre>
+</li>
+</ul>
+<h3 id="-">祖先组件 =&gt; 后代组件</h3>
+<blockquote>
+<p>由于嵌套层数过多，传递 props 不切实际，vue 给我们提供了 <code>provide/inject</code> 高级特性完成该任务。(vue 2.2.0 之后新增的)<br /></p>
+</blockquote>
+<blockquote>
+<p>简单说，父级组件中通过<code>provide</code>来提供变量，然后在子组件中通过<code>inject</code>来注入变量。不论子组件有多深，只要调用<code>inject</code>就可以注入<code>provide</code>中的数据。</p>
+</blockquote>
+<pre><code class="lang-javascript">// 父级组件提供 &#39;foo&#39;
+provide() {
+  return { foo: &#39;foo&#39; }
+}
+
+// 子组件注入 &#39;foo&#39;
+inject: [&#39;foo&#39;]
+</code></pre>
+<p><strong>注意：</strong></p>
+<ul>
+<li>1、只能父级组件给后代子组传值。<br></li>
+</ul>
+<h3 id="-">任意两个组件之间</h3>
+<ul>
+<li><p><strong>事件总线</strong></p>
+<ul>
+<li>创建一个类负责事件派发、监听与回调管理</li>
+</ul>
+<pre><code class="lang-javascript">// 事件派发、监听和回调管理
+class Bus {
+  constructor() {
+    this.callbacks = {};
+  }
+  $on(name, fn) {
+    this.callbacks[name] = this.callbacks[name] || [];
+    this.callbacks[name].push(fn);
+  }
+  $emit(name, args) {
+    if (this.callbacks[name]) {
+      this.callbacks[name].forEach((cb) =&gt; cb(args));
+    }
+  }
+}
+
+// 使用 main.js 挂在Vue原型上
+Vue.prototype.$bus = new Bus();
+
+// Child1 订阅消息
+this.$bus.$on(&#39;event-bus&#39;, handle);
+// Child2 发布消息
+this.$bus.$emit(&#39;event-bus&#39;, &#39;来自远方的问候&#39;);
+</code></pre>
+<ul>
+<li><strong>注意</strong><ul>
+<li>1、事件总线是对发布-订阅模式的一种实现。它是一种集中式事件处理机制，允许不同的组件之间进行彼此通信而又不需要相互依赖，从而达到一种解耦的目的。<br></li>
+<li>2、实践中，可以用 Vue 代替 Bus,因为 Vue 已实现了相应的功能。<br></li>
+<li>3、其实我们开发过程中,尤其是组件化开发（当然不局限于 vue）过程中，<code>事件池</code>带给我们的是一种处理问题的思维模式。例如，微信小程序开发 onReachBottom（页面上拉触底事件），项目中多个地方依赖这个触底事件，可考虑用<code>事件池</code>。<br></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>引入 vuex</strong></p>
+<p>&emsp;&emsp;vuex 多数情况，是针对我们业务相关数据的全局状态管理。<br>
+&emsp;&emsp;vuex 其实可以替代已上大部分情况来实现组件通讯，但是通常我们在封装项目中、团队中的通用组件、甚至在封装第三方 vue 插件库的时候，是没有 vuex 的。<br>
+&emsp;&emsp;创建唯一的全局数据管理者 store，通过它管理数据并通知组件状态变更。这里不展开。工作中用的比较频繁。关于它的使用及实现原理，后续可作为一个专题来讲。<br></p>
+</li>
+</ul>
+<h2 id="-">插槽</h2>
+<p>&emsp;&emsp;插槽就是 Vue 实现内容分发的 API,将元素（slot）作为承载分发内容的出口。通常在我们开发通用组件库中大量使用。<br></p>
+<p>&emsp;&emsp;在<code>vue2.6</code>及已上版本，slot 和 slot-scope 已经开始废弃， 有了新的替代: v-slot，v-slot 只能用在 template 上，和组件标签上，在这里我们只说 v-slot。</p>
+<p><a href="https://www.cnblogs.com/jiajia123/p/12526307.html">参考文章</a></p>
+<h3 id="-">匿名插槽</h3>
+<p>没有 slot 插槽情况下，组件标签内写的内容是不起任何作用的。一个元素里只能有一个匿名插槽。</p>
+<pre><code class="lang-javascript">// child1
+&lt;div&gt;
+  &lt;slot&gt;&lt;/slot&gt;
+&lt;/div&gt;
+
+// parent
+&lt;Child1&gt;hello&lt;/Child1&gt;
+</code></pre>
+<h3 id="-">具名插槽</h3>
+<p>将内容分发到子组件指定位置，可以存在多个具名插槽。</p>
+<pre><code class="lang-javascript">// child2
+&lt;div&gt;
+  &lt;slot&gt;&lt;/slot&gt;
+  &lt;slot name=&quot;content&quot;&gt;&lt;/slot&gt;
+&lt;/div&gt;
+
+// parent
+&lt;Child2&gt;
+  &lt;!-- 默认插槽用default做参数 --&gt;
+  &lt;template v-slot:default&gt;具名插槽&lt;/template&gt;
+  &lt;!-- 具名插槽用插槽名做参数 --&gt;
+  &lt;template v-slot:content&gt;内容...&lt;/template&gt;
+&lt;/Child2&gt;
+</code></pre>
+<h3 id="-">作用域插槽</h3>
+<p>作用域插槽内（分发内容），父组件可以拿到子组件的数据。子组件可以在 slot 标签上绑定属性值。</p>
+<pre><code class="lang-html">&lt;!-- Child3 --&gt;
+&lt;div&gt;
+  &lt;slot :foo=&quot;foo1&quot;&gt;&lt;/slot&gt;
+&lt;/div&gt;
+
+&lt;!-- parent 父组件通过slot-scope绑定的对象下拿到nickName的值 --&gt;
+&lt;Child3&gt;
+  &lt;template v-slot:default=&quot;slotProps&quot;&gt;
+    来自子组件数据：{{ slotProps.foo }}
+  &lt;/template&gt;
+&lt;/Child3&gt;
+</code></pre>
+<h2 id="-">混入</h2>
+<ul>
+<li><p><strong>什么是混入?</strong></p>
+<p>官方的解释：混入 (mixin) 提供了一种非常灵活的方式，来分发 Vue 组件中的可复用功能。一个混入对象可以包含任意组件选项。当组件使用混入对象时，所有混入对象的选项将被“混合”进入该组件本身的选项。 <br>
+其实就是 <code>混合的融入</code>。</p>
+</li>
+<li><p><strong>基本使用方式</strong></p>
+<p>===&gt; 代码实例 @components/mixincom</p>
+</li>
+<li><p><strong>合并问题</strong></p>
+<ul>
+<li><p>1、当 <code>组件内</code> 与 <code>mixin</code> 定义相同的生命周期钩子函数。默认 mixin 定义的钩子会先执行，接着才是组件内的钩子。其实只不过是对该生命钩子的重写。</p>
+</li>
+<li><p>2、当 <code>组件内</code> 与 <code>mixin</code> 定义相同的属性或方法（非钩子函数）。<code>组件内</code>权重最高，<code>mixin</code>中定义的属性方法会被盖掉。(简单的理解记忆)</p>
+</li>
+</ul>
+</li>
+<li><p><strong>使用场景:</strong></p>
+<p>有两个或多个非常相似的组件，他们基本功能差不多，但是他们之间存在差异足够的差异性。我们就可以考虑使用混合了。为什么呢 ?</p>
+<ul>
+<li><p>1、<strong>如果我们把它们拆分 n 个不同组件?</strong> 这样我们可能一旦功能变动，就得承担多个文件中更新代码的风险，也违背了 DRY(不写重复代码)原则。</p>
+</li>
+<li><p>2、<strong>如果我们保留为一个组件，通过 props 来创造差异性，从而进行区分?</strong> 太多的 props 传值会很快变得混乱不堪，维护者在使用组件的时候，需要理解一大段上下文，反而会拖慢迭代速度。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="-">消息传递 (派发与广播)</h2>
+<h3 id="-">派发， 往上派发。</h3>
+<ul>
+<li>曾孙组件 GrandGrandChild1</li>
+</ul>
+<pre><code class="lang-html">&lt;template&gt;
+  &lt;button @click=&quot;dispathHandler&quot;&gt;
+    dispatch
+  &lt;/button&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  methods: {
+    dispathHandler() {
+      this.$dispatch(&#39;dispatch&#39;, &#39;哈喽 我是GrandGrandChild1&#39;)
+    }
+  }
+&lt;/script&gt;
+</code></pre>
+<ul>
+<li>子组件 Child1</li>
+</ul>
+<pre><code class="lang-html">&lt;script&gt;
+  mounted: {
+    this.$on(&#39;dispatch&#39;, (msg) =&gt; {
+      this.msg = &#39;接收dispatch消息:&#39; + msg;
+    });
+  }
+&lt;/script&gt;
+</code></pre>
+<h3 id="-">广播， 往下广播。</h3>
+<ul>
+<li>子组件 Child1</li>
+</ul>
+<pre><code class="lang-html">&lt;template&gt;
+  &lt;button @click=&quot;boardcastHandler&quot;&gt;广播子元素&lt;/button&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  methods: {
+    boardcastHandler() {
+      this.$boardcast(&#39;boardcast&#39;,&#39;我是Child1&#39;);
+    }
+  }
+&lt;/script&gt;
+</code></pre>
+<ul>
+<li>曾孙组件 GrandGrandChild1</li>
+</ul>
+<pre><code class="lang-html">&lt;script&gt;
+  mounted: {
+    this.$on(&#39;boardcast&#39;, (msg) =&gt; {
+      this.msg = &#39;接收boardcast消息:&#39; + msg;
+    });
+  }
+&lt;/script&gt;
+</code></pre>
+<p>===&gt; @/mixins/emitter.js</p>
+<h3 id="-">其它</h3>
+<p>1、实际上 vue1.x 版本是有$dispatch 和 $broadcast， 自 vue2.x 之后被弃用，可能官方有它自己考量。（平时的业务场景，不太会出现这么复杂的场景，即使存在可以用 vuex 替代）<br>
+2、通常使用场景，当我们在独立开发组件库的时候，不会依赖 vuex 的。 <a href="https://github.com/ElemeFE/element/blob/dev/src/mixins/emitter.js">elementUI 源码地址</a> ||| <a href="http://ttpcstatic.dftoutiao.com/ecms/image/20200821/734x940_703dc49e.png_.webp">elementUI 源码截图</a></p>
+<h2 id="-">组件实践</h2>
+<p>elementUI 表单提交组件简版的实现，是对已上内容的综合实践。一个很典型的组件实现的例子。(高阶组件封装)
+<a href="http://ttpcstatic.dftoutiao.com/ecms/image/20200809/947x931_02f29ee9.png_.webp">elementUI 表单提交使用截图</a></p>
+<ul>
+<li><p><strong>创建 KInput.vue</strong></p>
+<pre><code class="lang-html">&lt;template&gt;
+  &lt;div&gt;
+    &lt;input :value=&quot;value&quot; @input=&quot;onInput&quot; v-bind=&quot;$attrs&quot; /&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  export default {
+    inheritAttrs: false,
+    props: {
+      value: {
+        type: String,
+        default: &#39;&#39;,
+      },
+      type: {
+        type: String,
+        default: &#39;text&#39;,
+      },
+    },
+    methods: {
+      onInput(e) {
+        // 转发input事件即可
+        this.$emit(&#39;input&#39;, e.target.value);
+        // 通知校验
+        this.$parent.$emit(&#39;validate&#39;);
+      },
+    },
+  };
+&lt;/script&gt;
+</code></pre>
+</li>
+<li><p><strong>使用 KInput.vue</strong>
+创建 index.vue, 添加如下代码：</p>
+<pre><code class="lang-html">&lt;template&gt;
+  &lt;div&gt;
+    &lt;h3&gt;KForm表单&lt;/h3&gt;
+    &lt;hr /&gt;
+    &lt;k-input v-model=&quot;model.username&quot;&gt;&lt;/k-input&gt;
+    &lt;k-input type=&quot;text&quot; v-model=&quot;model.age&quot;&gt;&lt;/k-input&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  import KInput from &#39;./KInput&#39;;
+  export default {
+    components: { KInput },
+    data() {
+      return {
+        model: {
+          username: &#39;xcp&#39;,
+          age: &#39;&#39;,
+        },
+      };
+    },
+  };
+&lt;/script&gt;
+</code></pre>
+</li>
+<li><p><strong>创建 KFormItem.vue</strong></p>
+<pre><code class="lang-html">&lt;template&gt;
+  &lt;div&gt;
+    &lt;label v-if=&quot;label&quot;&gt;{{label}}&lt;/label&gt;
+    &lt;slot&gt;&lt;/slot&gt;
+    &lt;p v-if=&quot;error&quot;&gt;{{error}}&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  export default {
+    props: {
+      label: { type: String, default: &#39;&#39; }, // 标签
+      prop: { type: String, default: &#39;&#39; }, // 字段
+    },
+    data() {
+      return { error: &#39;&#39; };
+    },
+  };
+&lt;/script&gt;
+</code></pre>
+</li>
+<li><p><strong>使用 KFormItem.vue</strong>
+index.vue, 添加如下代码：</p>
+<pre><code class="lang-html">&lt;template&gt;
+  &lt;div&gt;
+    &lt;h3&gt;KForm表单&lt;/h3&gt;
+    &lt;hr /&gt;
+    &lt;k-form-item label=&quot;用户名&quot; prop=&quot;username&quot;&gt;
+      &lt;k-input v-model=&quot;model.username&quot;&gt;&lt;/k-input&gt;
+    &lt;/k-form-item&gt;
+    &lt;k-form-item label=&quot;年龄&quot; prop=&quot;age&quot;&gt;
+      &lt;k-input type=&quot;text&quot; v-model=&quot;model.age&quot;&gt;&lt;/k-input&gt;
+    &lt;/k-form-item&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+</code></pre>
+</li>
+<li><p><strong>实现 KForm</strong></p>
+</li>
+</ul>
+<pre><code class="lang-html">&lt;template&gt;
+  &lt;form&gt;
+    &lt;slot&gt;&lt;/slot&gt;
+  &lt;/form&gt;
+&lt;/template&gt;
+&lt;script&gt;
+  export default {
+    provide() {
+      return { form: this };
+    },
+    props: {
+      model: { type: Object, required: true },
+      rules: { type: Object },
+    },
+  };
+&lt;/script&gt;
+</code></pre>
+<ul>
+<li><p><strong>使用 KForm</strong></p>
+<pre><code class="lang-html">&lt;template&gt;
+  &lt;div&gt;
+    &lt;h3&gt;KForm表单&lt;/h3&gt;
+    &lt;hr /&gt;
+    &lt;k-form :model=&quot;model&quot; :rules=&quot;rules&quot; ref=&quot;loginForm&quot;&gt;
+      ...
+    &lt;/k-form&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  import KForm from &#39;./KForm&#39;;
+  export default {
+    components: { KForm },
+    data() {
+      return {
+        rules: {
+          username: [{ required: true, message: &#39;请输入用户名&#39; }],
+          password: [{ required: true, message: &#39;请填写年龄&#39; }],
+        },
+      };
+    },
+    methods: {
+      submitForm() {
+        this.$refs[&#39;loginForm&#39;].validate((valid) =&gt; {
+          if (valid) {
+            alert(&#39;校验通过。&#39;);
+          } else {
+            alert(&#39;校验失败！&#39;);
+          }
+        });
+      },
+    },
+  };
+&lt;/script&gt;
+</code></pre>
+</li>
+<li><p><strong>数据校验</strong></p>
+<ul>
+<li><p>KInput 通知校验</p>
+<pre><code class="lang-javascript">onInput(e) {
+  this.$parent.$emit(&#39;validate&#39;);//$parent指KFormItem
+}
+</code></pre>
+</li>
+<li><p>KFormItem 监听校验通知，获取规则并执行校验</p>
+<pre><code class="lang-bash">inject: [&#39;form&#39;], // 注入
+mounted(){
+  // 监听校验事件
+  this.$on(&#39;validate&#39;, () =&gt; { this.validate() })
+},
+methods: {
+  validate() {
+    // 获取对应KFormItem校验规则
+    console.log(this.form.rules[this.prop]);
+    // 获取校验值
+    console.log(this.form.model[this.prop]);
+  }
+}
+</code></pre>
+</li>
+<li><p>安装 async-validator： npm i async-validator -S</p>
+<pre><code class="lang-javascript">import Schema from &quot;async-validator&quot;;
+
+validate() {
+  // 获取对应FormItem校验规则
+  const rules = this.form.rules[this.prop];
+  // 获取校验值
+  const value = this.form.model[this.prop];
+  // 校验描述对象
+  const descriptor = { [this.prop]: rules };
+  // 创建校验器
+  const schema = new Schema(descriptor);
+  // 返回Promise，没有触发catch就说明验证通过
+  return schema.validate({ [this.prop]: value }, errors =&gt; {
+    if (errors) {
+      // 将错误信息显示
+      this.error = errors[0].message;
+    } else {
+      // 校验通过
+      this.error = &quot;&quot;;
+    }
+  }
+}
+</code></pre>
+</li>
+<li><p>表单全局验证，为 Form 提供 validate 方法</p>
+<pre><code class="lang-javascript">validate(cb) {
+  // 调用所有含有prop属性的子组件的validate方法并得到Promise数组
+  const tasks = this.$children.filter(item =&gt; item.prop).map(item =&gt; item.validate());
+  // 所有任务必须全部成功才算校验通过，任一失败则校验失败
+  Promise.all(tasks).then(() =&gt; cb(true)).catch(() =&gt; cb(false))
+}
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="-">弹窗组件</h2>
+<blockquote>
+<p><a href="https://blog.csdn.net/wwwqiaoling/article/details/105077832">参考博文</a></p>
+</blockquote>
+<h3 id="-">特点</h3>
+<p>弹窗这类组件的特点是它们在当前 vue 实例例之外独立存在，通常挂载于 body; 它们是通过 JS 动态创建 的，不需要在任何组件中声明。通常类似的使用姿势:</p>
+<pre><code class="lang-javascript">this.$create(Notice, {
+  title: &#39;我是一个弹窗哦&#39;,
+  message: &#39;提示信息&#39;,
+  duration: 1000,
+}).show();
+</code></pre>
+<h3 id="-">实现思路</h3>
+<p>思路（实现全局 Notice 组件）：<br>
+1、首先我得有一个 Notice 组件的配置，也就是 Notice.vue 文件。<br>
+2、要把 Notice 组件直接挂在到 body 下，用 render 函数实现。<br>
+3、全局引用，通过 vue 插件方式引入。<br></p>
+<h3 id="-">代码实现</h3>
+<p>===&gt; 代码实例 @components/notice</p>
+<h2 id="-">递归组件</h2>
+<p>===&gt; 代码实例 @components/recursion</p>
+<ul>
+<li><strong>递归组件 Node</strong></li>
+</ul>
+<pre><code class="lang-html">&lt;template&gt;
+  &lt;li&gt;
+    &lt;div @click=&quot;toggle&quot;&gt;
+      {{ data.title }}
+      &lt;span v-if=&quot;isFolder&quot;&gt;[{{ open ? &#39;-&#39; : &#39;+&#39; }}]&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;!-- 必须有结束条件 --&gt;
+    &lt;ul v-show=&quot;open&quot; v-if=&quot;isFolder&quot;&gt;
+      &lt;Node v-for=&quot;d in data.children&quot; :key=&quot;d.id&quot; :data=&quot;d&quot;&gt;&lt;/Node&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  export default {
+    name: &#39;Node&#39;, // name对递归组件是必要的
+    data() {
+      return {
+        open: false,
+      };
+    },
+    props: {
+      data: {
+        type: Object,
+        require: true,
+      },
+    },
+    methods: {
+      toggle() {
+        if (this.isFolder) {
+          this.open = !this.open;
+        }
+      },
+    },
+    computed: {
+      isFolder() {
+        return this.data.children &amp;&amp; this.data.children.length;
+      },
+    },
+  };
+&lt;/script&gt;
+</code></pre>
+<ul>
+<li><strong>使用方式</strong></li>
+</ul>
+<pre><code class="lang-html">&lt;template&gt;
+  &lt;div class=&quot;coms-recursion&quot;&gt;
+    &lt;ul&gt;
+      &lt;Node :data=&quot;data&quot;&gt;&lt;/Node&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+  import Node from &#39;./Node.vue&#39;;
+  export default {
+    data() {
+      return {
+        data: {
+          id: &#39;1&#39;,
+          title: &#39;递归组件&#39;,
+          children: [
+            {
+              id: &#39;1-1&#39;,
+              title: &#39;使用方法&#39;,
+              children: [
+                { id: &#39;1-1-1&#39;, title: &#39;使用方法1&#39; },
+                { id: &#39;1-1-2&#39;, title: &#39;使用方法2&#39; },
+                { id: &#39;1-1-3&#39;, title: &#39;使用方法3&#39; },
+              ],
+            },
+            {
+              id: &#39;1-2&#39;,
+              title: &#39;注意事项&#39;,
+              children: [
+                { id: &#39;1-2-1&#39;, title: &#39;注意事项1&#39; },
+                { id: &#39;1-2-2&#39;, title: &#39;注意事项2&#39; },
+              ],
+            },
+            {
+              id: &#39;1-3&#39;,
+              title: &#39;使用场景&#39;,
+            },
+          ],
+        },
+      };
+    },
+    components: {
+      Node,
+    },
+  };
+&lt;/script&gt;
+</code></pre>
+<ul>
+<li><strong>特别的</strong>
+1、递归组件一定要设置 name。<br>
+2、必须要有结束条件，不然死循环，内存溢出。<br>
+3、一般，我们自己在封装一些业务的时候，碰到这种树形结构数据的时候，会考虑递归。电商类业务会用的比较多。<br>
+4、一般有明显（确定）层次的树形数据构，正常的循环就能满足需求，就没必要考虑递归。<br></li>
+</ul>
+
+          	</article>
+        </div>
+		</div>
+  </body>
+</html>
+<script type="text/javascript" src="toc/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="toc/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="toc/js/ztree_toc.js"></script>
+<script type="text/javascript" src="toc_conf.js"></script>
+
+<SCRIPT type="text/javascript" >
+<!--
+$(document).ready(function(){
+    var css_conf = eval(markdown_panel_style);
+    $('#readme').css(css_conf)
+    
+    var conf = eval(jquery_ztree_toc_opts);
+		$('#tree').ztree_toc(conf);
+});
+//-->
+</SCRIPT>
