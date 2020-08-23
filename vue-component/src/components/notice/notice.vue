@@ -42,9 +42,12 @@ export default {
 <style>
 .box {
   position: fixed;
-  width: 200px;
-  top: 16px;
-  left: 0;
+  width: 250px;
+  /* top: 16px; */
+  left: 50%;
+  margin-left: -125px;
+  top: 50%;
+  margin-top: -100px;
   text-align: center;
   pointer-events: none;
   background-color: #fff;

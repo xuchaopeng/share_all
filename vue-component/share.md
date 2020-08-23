@@ -20,11 +20,11 @@
 
 - **特性\$attrs**
 
-  1、默认情况下，调用组件时，传入一些没有在props中定义的属性（`非法属性`），会把这些`非法属性`渲染在组件的`根元素`上，然而这些非法属性会记录在$attrs属性上。<br>
+  1、默认情况下，调用组件时，传入一些没有在 props 中定义的属性（`非法属性`），会把这些`非法属性`渲染在组件的`根元素`上，然而这些非法属性会记录在\$attrs 属性上。<br>
 
-  2、通过组件内部设置`inheritAttrs:false`即可，避免非法属性渲染在组件根元素上。(vue2.4.0新增)<br>
-  
-  3、通过v-bind="$attrs"可以把`非法`属性渲染到指定的组件内某个元素上。<br>
+  2、通过组件内部设置`inheritAttrs:false`即可，避免非法属性渲染在组件根元素上。(vue2.4.0 新增)<br>
+
+  3、通过 v-bind="\$attrs"可以把`非法`属性渲染到指定的组件内某个元素上。<br>
 
   ```javascript
   // Child: 未在props中声明的属性
@@ -57,7 +57,7 @@
 ### 子组件 => 父组件
 
 - **自定义事件**
-  
+
   父组件定义事件，子组件派发事件，并传递数据。
 
   ```javascript
@@ -77,7 +77,7 @@
 ### 兄弟组件<=>兄弟组件
 
 - **通过共同的祖辈组件**
-  
+
   > 通过共同的祖辈组件搭桥，$parent 或 $root
 
   ```javascript
@@ -89,10 +89,9 @@
 
 ### 祖先组件 => 后代组件
 
-> 由于嵌套层数过多，传递 props不切实际，vue 给我们提供了 `provide/inject` 高级特性完成该任务。(vue 2.2.0之后新增的)<br />
+> 由于嵌套层数过多，传递 props 不切实际，vue 给我们提供了 `provide/inject` 高级特性完成该任务。(vue 2.2.0 之后新增的)<br />
 
 > 简单说，父级组件中通过`provide`来提供变量，然后在子组件中通过`inject`来注入变量。不论子组件有多深，只要调用`inject`就可以注入`provide`中的数据。
-
 
 ```javascript
 // 父级组件提供 'foo'
@@ -104,15 +103,16 @@ provide() {
 inject: ['foo']
 ```
 
- **注意：**
+**注意：**
 
- - 1、只能父级组件给后代子组传值。<br>
+- 1、只能父级组件给后代子组传值。<br>
 
 ### 任意两个组件之间
 
 - **事件总线**
+
   - 创建一个类负责事件派发、监听与回调管理
-  
+
   ```javascript
   // 事件派发、监听和回调管理
   class Bus {
@@ -142,25 +142,25 @@ inject: ['foo']
   - **注意**
     - 1、事件总线是对发布-订阅模式的一种实现。它是一种集中式事件处理机制，允许不同的组件之间进行彼此通信而又不需要相互依赖，从而达到一种解耦的目的。<br>
     - 2、实践中，可以用 Vue 代替 Bus,因为 Vue 已实现了相应的功能。<br>
-    - 3、其实我们开发过程中,尤其是组件化开发（当然不局限于vue）过程中，`事件池`带给我们的是一种处理问题的思维模式。例如，微信小程序开发 onReachBottom（页面上拉触底事件），项目中多个地方依赖这个触底事件，可考虑用`事件池`。<br>
+    - 3、其实我们开发过程中,尤其是组件化开发（当然不局限于 vue）过程中，`事件池`带给我们的是一种处理问题的思维模式。例如，微信小程序开发 onReachBottom（页面上拉触底事件），项目中多个地方依赖这个触底事件，可考虑用`事件池`。<br>
 
-- **引入vuex**
+- **引入 vuex**
 
-  &emsp;&emsp;vuex多数情况，是针对我们业务相关数据的全局状态管理。<br>
-  &emsp;&emsp;vuex其实可以替代已上大部分情况来实现组件通讯，但是通常我们在封装项目中、团队中的通用组件、甚至在封装第三方vue插件库的时候，是没有vuex的。<br>
+  &emsp;&emsp;vuex 多数情况，是针对我们业务相关数据的全局状态管理。<br>
+  &emsp;&emsp;vuex 其实可以替代已上大部分情况来实现组件通讯，但是通常我们在封装项目中、团队中的通用组件、甚至在封装第三方 vue 插件库的时候，是没有 vuex 的。<br>
   &emsp;&emsp;创建唯一的全局数据管理者 store，通过它管理数据并通知组件状态变更。这里不展开。工作中用的比较频繁。关于它的使用及实现原理，后续可作为一个专题来讲。<br>
 
 ## 插槽
 
-&emsp;&emsp;插槽语法是 Vue 实现内容分发 API,用于复合组件的开发。通常在我们开发通用组件库中大量使用。<br>
+&emsp;&emsp;插槽就是 Vue 实现内容分发的 API,将元素（slot）作为承载分发内容的出口。通常在我们开发通用组件库中大量使用。<br>
 
-&emsp;&emsp;在`vue2.6`及已上版本，slot 和slot-scope已经开始废弃， 有了新的替代: v-slot，v-slot只能用在template 上，和组件标签上，在这里我们只说v-slot。
+&emsp;&emsp;在`vue2.6`及已上版本，slot 和 slot-scope 已经开始废弃， 有了新的替代: v-slot，v-slot 只能用在 template 上，和组件标签上，在这里我们只说 v-slot。
 
 [参考文章](https://www.cnblogs.com/jiajia123/p/12526307.html)
 
 ### 匿名插槽
 
-一个元素里只能有一个匿名插槽。
+没有 slot 插槽情况下，组件标签内写的内容是不起任何作用的。一个元素里只能有一个匿名插槽。
 
 ```javascript
 // child1
@@ -194,7 +194,7 @@ inject: ['foo']
 
 ### 作用域插槽
 
-作用域插槽内（分发内容），父组件可以拿到子组件的数据。子组件可以在slot标签上绑定属性值。
+作用域插槽内（分发内容），父组件可以拿到子组件的数据。子组件可以在 slot 标签上绑定属性值。
 
 ```html
 <!-- Child3 -->
@@ -212,34 +212,34 @@ inject: ['foo']
 
 ## 混入
 
-  - **什么是混入?**
-  
-    官方的解释：混入 (mixin) 提供了一种非常灵活的方式，来分发 Vue 组件中的可复用功能。一个混入对象可以包含任意组件选项。当组件使用混入对象时，所有混入对象的选项将被“混合”进入该组件本身的选项。 <br>
-    其实就是 `混合的融入`。
+- **什么是混入?**
 
-  - **基本使用方式**
-  
-     ===> 代码实例 @components/mixincom
+  官方的解释：混入 (mixin) 提供了一种非常灵活的方式，来分发 Vue 组件中的可复用功能。一个混入对象可以包含任意组件选项。当组件使用混入对象时，所有混入对象的选项将被“混合”进入该组件本身的选项。 <br>
+  其实就是 `混合的融入`。
 
-  - **合并问题**
+- **基本使用方式**
 
-    - 1、当 `组件内` 与 `mixin` 定义相同的生命周期钩子函数。默认mixin定义的钩子会先执行，接着才是组件内的钩子。其实只不过是对该生命钩子的重写。
-  
-    - 2、当 `组件内` 与 `mixin` 定义相同的属性或方法（非钩子函数）。`组件内`权重最高，`mixin`中定义的属性方法会被盖掉。(简单的理解记忆)
+  ===> 代码实例 @components/mixincom
 
-  - **使用场景:**
-  
-    有两个或多个非常相似的组件，他们基本功能差不多，但是他们之间存在差异足够的差异性。我们就可以考虑使用混合了。为什么呢 ? 
-    
-      - 1、**如果我们把它们拆分n个不同组件?** 这样我们可能一旦功能变动，就得承担多个文件中更新代码的风险，也违背了DRY(不写重复代码)原则。
+- **合并问题**
 
-      - 2、**如果我们保留为一个组件，通过props来创造差异性，从而进行区分?** 太多的props传值会很快变得混乱不堪，维护者在使用组件的时候，需要理解一大段上下文，反而会拖慢迭代速度。
+  - 1、当 `组件内` 与 `mixin` 定义相同的生命周期钩子函数。默认 mixin 定义的钩子会先执行，接着才是组件内的钩子。其实只不过是对该生命钩子的重写。
+
+  - 2、当 `组件内` 与 `mixin` 定义相同的属性或方法（非钩子函数）。`组件内`权重最高，`mixin`中定义的属性方法会被盖掉。(简单的理解记忆)
+
+- **使用场景:**
+
+  有两个或多个非常相似的组件，他们基本功能差不多，但是他们之间存在差异足够的差异性。我们就可以考虑使用混合了。为什么呢 ?
+
+  - 1、**如果我们把它们拆分 n 个不同组件?** 这样我们可能一旦功能变动，就得承担多个文件中更新代码的风险，也违背了 DRY(不写重复代码)原则。
+
+  - 2、**如果我们保留为一个组件，通过 props 来创造差异性，从而进行区分?** 太多的 props 传值会很快变得混乱不堪，维护者在使用组件的时候，需要理解一大段上下文，反而会拖慢迭代速度。
 
 ## 消息传递 (派发与广播)
 
 ### 派发， 往上派发。
 
-- 曾孙组件GrandGrandChild1
+- 曾孙组件 GrandGrandChild1
 
 ```html
 <template>
@@ -257,13 +257,13 @@ inject: ['foo']
 </script>
 ```
 
-- 子组件Child1
+- 子组件 Child1
 
 ```html
 <script>
   mounted: {
-    this.$on("dispatch", msg => {
-      this.msg = "接收dispatch消息:" + msg;
+    this.$on('dispatch', (msg) => {
+      this.msg = '接收dispatch消息:' + msg;
     });
   }
 </script>
@@ -271,7 +271,7 @@ inject: ['foo']
 
 ### 广播， 往下广播。
 
-- 子组件Child1
+- 子组件 Child1
 
 ```html
 <template>
@@ -287,13 +287,13 @@ inject: ['foo']
 </script>
 ```
 
-- 曾孙组件GrandGrandChild1
-  
+- 曾孙组件 GrandGrandChild1
+
 ```html
 <script>
   mounted: {
-    this.$on("boardcast", msg => {
-      this.msg = "接收boardcast消息:" + msg;
+    this.$on('boardcast', (msg) => {
+      this.msg = '接收boardcast消息:' + msg;
     });
   }
 </script>
@@ -303,8 +303,8 @@ inject: ['foo']
 
 ### 其它
 
-1、实际上vue1.x版本是有$dispatch 和 $broadcast， 自vue2.x之后被弃用，可能官方有它自己考量。（平时的业务场景，不太会出现这么复杂的场景，即使存在可以用vuex替代）<br>
-2、通常使用场景，当我们在独立开发组件库的时候，不会依赖vuex的。 [elementUI源码地址](https://github.com/ElemeFE/element/blob/dev/src/mixins/emitter.js) |||  [elementUI源码截图](http://ttpcstatic.dftoutiao.com/ecms/image/20200821/734x940_703dc49e.png_.webp)
+1、实际上 vue1.x 版本是有$dispatch 和 $broadcast， 自 vue2.x 之后被弃用，可能官方有它自己考量。（平时的业务场景，不太会出现这么复杂的场景，即使存在可以用 vuex 替代）<br>
+2、通常使用场景，当我们在独立开发组件库的时候，不会依赖 vuex 的。 [elementUI 源码地址](https://github.com/ElemeFE/element/blob/dev/src/mixins/emitter.js) ||| [elementUI 源码截图](http://ttpcstatic.dftoutiao.com/ecms/image/20200821/734x940_703dc49e.png_.webp)
 
 ## 组件实践
 
@@ -546,13 +546,13 @@ elementUI 表单提交组件简版的实现，是对已上内容的综合实践�
 
 ### 特点
 
-弹窗这类组件的特点是它们在当前vue实例例之外独立存在，通常挂载于body; 它们是通过JS动态创建 的，不需要在任何组件中声明。通常类似的使用姿势:
+弹窗这类组件的特点是它们在当前 vue 实例例之外独立存在，通常挂载于 body; 它们是通过 JS 动态创建 的，不需要在任何组件中声明。通常类似的使用姿势:
 
 ```javascript
 this.$create(Notice, {
-      title: '我是一个弹窗哦',
-      message: '提示信息', 
-      duration: 1000
+  title: '我是一个弹窗哦',
+  message: '提示信息',
+  duration: 1000,
 }).show();
 ```
 
@@ -567,13 +567,12 @@ this.$create(Notice, {
 
 ===> 代码实例 @components/notice
 
-
 ## 递归组件
 
 ===> 代码实例 @components/recursion
 
-- **递归组件Node**
-  
+- **递归组件 Node**
+
 ```html
 <template>
   <li>
@@ -589,38 +588,37 @@ this.$create(Notice, {
 </template>
 
 <script>
-export default {
-  name: 'Node', // name对递归组件是必要的
-  data() {
-    return {
-      open: false,
-    }
-  },
-  props: {
-    data: {
-      type: Object,
-      require: true,
+  export default {
+    name: 'Node', // name对递归组件是必要的
+    data() {
+      return {
+        open: false,
+      };
     },
-  },
-  methods: {
-    toggle() {
-      if (this.isFolder) {
-        this.open = !this.open
-      }
+    props: {
+      data: {
+        type: Object,
+        require: true,
+      },
     },
-  },
-  computed: {
-    isFolder() {
-      return this.data.children && this.data.children.length
+    methods: {
+      toggle() {
+        if (this.isFolder) {
+          this.open = !this.open;
+        }
+      },
     },
-  },
-}
+    computed: {
+      isFolder() {
+        return this.data.children && this.data.children.length;
+      },
+    },
+  };
 </script>
-
 ```
 
 - **使用方式**
-  
+
 ```html
 <template>
   <div class="coms-recursion">
@@ -631,48 +629,48 @@ export default {
 </template>
 
 <script>
-import Node from './Node.vue'
-export default {
-  data() {
-    return {
-      data: {
-        id: '1',
-        title: '递归组件',
-        children: [
-          {
-            id: '1-1',
-            title: '使用方法',
-            children: [
-              { id: '1-1-1', title: '使用方法1' },
-              { id: '1-1-2', title: '使用方法2' },
-              { id: '1-1-3', title: '使用方法3' },
-            ],
-          },
-          {
-            id: '1-2',
-            title: '注意事项',
-            children: [
-              { id: '1-2-1', title: '注意事项1' },
-              { id: '1-2-2', title: '注意事项2' },
-            ],
-          },
-          {
-            id: '1-3',
-            title: '使用场景',
-          },
-        ],
-      },
-    }
-  },
-  components: {
-    Node,
-  },
-}
+  import Node from './Node.vue';
+  export default {
+    data() {
+      return {
+        data: {
+          id: '1',
+          title: '递归组件',
+          children: [
+            {
+              id: '1-1',
+              title: '使用方法',
+              children: [
+                { id: '1-1-1', title: '使用方法1' },
+                { id: '1-1-2', title: '使用方法2' },
+                { id: '1-1-3', title: '使用方法3' },
+              ],
+            },
+            {
+              id: '1-2',
+              title: '注意事项',
+              children: [
+                { id: '1-2-1', title: '注意事项1' },
+                { id: '1-2-2', title: '注意事项2' },
+              ],
+            },
+            {
+              id: '1-3',
+              title: '使用场景',
+            },
+          ],
+        },
+      };
+    },
+    components: {
+      Node,
+    },
+  };
 </script>
 ```
 
 - **特别的**
-  1、递归组件一定要设置name。<br>
+  1、递归组件一定要设置 name。<br>
   2、必须要有结束条件，不然死循环，内存溢出。<br>
   3、一般，我们自己在封装一些业务的时候，碰到这种树形结构数据的时候，会考虑递归。电商类业务会用的比较多。<br>
   4、一般有明显（确定）层次的树形数据构，正常的循环就能满足需求，就没必要考虑递归。<br>
