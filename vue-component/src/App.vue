@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!-- 一、组件通信 -->
-    <Communicate></Communicate>
+    <!-- <Communicate></Communicate> -->
 
     <!-- 二、组件插槽 -->
     <!-- <SlotTest></SlotTest> -->
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import Communicate from '@/components/communicate'
+// import Communicate from '@/components/communicate'
 // import SlotTest from '@/components/slots'
 // import Mixincom from '@/components/mixincom'
 // import FormTest from '@/components/form'
@@ -38,7 +38,7 @@ export default {
   //   }
   // },
   components: {
-    Communicate,
+    // Communicate,
     // SlotTest,
     // Mixincom,
     // FormTest,

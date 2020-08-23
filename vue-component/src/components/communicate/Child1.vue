@@ -13,7 +13,7 @@
 import Grandchild1 from '@/components/communicate/grandchild1.vue'
 export default {
   name: 'com-child1',
-  // inheritAttrs: false,
+  inheritAttrs: false,
   props: {
     title: {
       type: String,
