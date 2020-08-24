@@ -65,8 +65,10 @@
 				</div>
         <div id='readme' style='width:70%;margin-left:20%;'>
           	<article class='markdown-body'>
-            	<h1 id="-">组件化实践</h1>
-<p>组件化是 vue 的核心思想，它能提高开发效率，方便重复使用，简化调试步骤，提高整个项目的可维护性，便于多人协同开发。</p>
+            	<h1 id="vue-">Vue 组件化实践</h1>
+<p>本次分享内容分以下几个部分（通讯、插槽、混入、实践、弹窗组件、递归组件）。<br>
+vue 组件实例的运行环境 vue 版本 2.2.6, node 版本 8.15.0 。每个部分都是一个大组件，以组件形式挂载到页面，来演示一些例子。<br>
+组件化是 vue 的核心思想，它能提高开发效率，方便重复使用，简化调试步骤，提高整个项目的可维护性，便于多人协同开发。<br></p>
 <h2 id="-">组件通讯</h2>
 <h3 id="-">父组件 =&gt; 子组件</h3>
 <ul>
@@ -205,11 +207,12 @@ this.$bus.$emit(&#39;event-bus&#39;, &#39;来自远方的问候&#39;);
 </li>
 </ul>
 <h2 id="-">插槽</h2>
-<p>&emsp;&emsp;插槽就是 Vue 实现内容分发的 API,将元素（slot）作为承载分发内容的出口。通常在我们开发通用组件库中大量使用。<br></p>
-<p>&emsp;&emsp;在<code>vue2.6</code>及已上版本，slot 和 slot-scope 已经开始废弃， 有了新的替代: v-slot，v-slot 只能用在 template 上，和组件标签上，在这里我们只说 v-slot。</p>
+<p>&emsp;&emsp;插槽就是 Vue 实现内容分发的 API,将元素（slot）作为承载分发内容的出口。通常在我们开发通用组件库中大量使用。<br>
+&emsp;&emsp;通俗点：插槽，也就是 slot,是组件的一块 html 模版，这快模版显不显示、以及怎样显示由父组件来决定。<br>
+&emsp;&emsp;这里我只介绍最新使用方式 v-slot,它只能用在 template 上，和组件标签上。（<code>vue2.6</code>及已上版本，slot-scope 已开始废弃）</p>
 <p><a href="https://www.cnblogs.com/jiajia123/p/12526307.html">参考文章</a></p>
 <h3 id="-">匿名插槽</h3>
-<p>没有 slot 插槽情况下，组件标签内写的内容是不起任何作用的。一个元素里只能有一个匿名插槽。</p>
+<p>没有 slot 插槽情况下，组件标签内写的内容是不起任何作用的。匿名插槽没有设置 name 属性的插槽（默认插槽），一个元素里只能有一个匿名插槽。</p>
 <pre><code class="lang-javascript">// child1
 &lt;div&gt;
   &lt;slot&gt;&lt;/slot&gt;
@@ -219,30 +222,34 @@ this.$bus.$emit(&#39;event-bus&#39;, &#39;来自远方的问候&#39;);
 &lt;Child1&gt;hello&lt;/Child1&gt;
 </code></pre>
 <h3 id="-">具名插槽</h3>
-<p>将内容分发到子组件指定位置，可以存在多个具名插槽。</p>
+<p>具名插槽：具有 name 属性的插槽。使用场景：需要将内容分发到子组件指定位置，可以存在多个具名插槽。</p>
 <pre><code class="lang-javascript">// child2
 &lt;div&gt;
-  &lt;slot&gt;&lt;/slot&gt;
-  &lt;slot name=&quot;content&quot;&gt;&lt;/slot&gt;
+  &lt;h3&gt;标题....&lt;/h3&gt;
+  &lt;slot name=&quot;conten1&quot;&gt;&lt;/slot&gt;
+  &lt;p&gt;其它内容....&lt;/p&gt;
+  &lt;slot name=&quot;conten2&quot;&gt;&lt;/slot&gt;
 &lt;/div&gt;
 
 // parent
 &lt;Child2&gt;
-  &lt;!-- 默认插槽用default做参数 --&gt;
-  &lt;template v-slot:default&gt;具名插槽&lt;/template&gt;
+  &lt;!-- template上v-slot:插槽名  作为参数 --&gt;
+  &lt;template v-slot:conten1&gt;内容1...&lt;/template&gt;
   &lt;!-- 具名插槽用插槽名做参数 --&gt;
-  &lt;template v-slot:content&gt;内容...&lt;/template&gt;
+  &lt;template v-slot:conten2&gt;内容2...&lt;/template&gt;
 &lt;/Child2&gt;
 </code></pre>
 <h3 id="-">作用域插槽</h3>
-<p>作用域插槽内（分发内容），父组件可以拿到子组件的数据。子组件可以在 slot 标签上绑定属性值。</p>
+<p>通俗的说：作用域插槽就是让插槽内容能够访问子组件中才有的数据。<br>
+使用场景：父组件需要使用到子组件的数据。子组件可以在 slot 标签上绑定属性值。</p>
 <pre><code class="lang-html">&lt;!-- Child3 --&gt;
 &lt;div&gt;
   &lt;slot :foo=&quot;foo1&quot;&gt;&lt;/slot&gt;
 &lt;/div&gt;
 
-&lt;!-- parent 父组件通过slot-scope绑定的对象下拿到nickName的值 --&gt;
+&lt;!-- parent --&gt;
 &lt;Child3&gt;
+  &lt;!-- 默认插槽的插槽名称 default , slotProps指的是对应slot标签上属性组成的对象集合--&gt;
   &lt;template v-slot:default=&quot;slotProps&quot;&gt;
     来自子组件数据：{{ slotProps.foo }}
   &lt;/template&gt;

@@ -9,10 +9,12 @@ export default class Bus {
     // }
     this.callbacks = {};
   }
+  // 实现事件的订阅
   $on(name, fn) {
     this.callbacks[name] = this.callbacks[name] || [];
     this.callbacks[name].push(fn);
   }
+  // 事件的派发
   $emit(name, args) {
     if (this.callbacks[name]) {
       // 存在 遍历所有callback

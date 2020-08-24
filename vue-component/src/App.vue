@@ -4,7 +4,7 @@
     <!-- <Communicate></Communicate> -->
 
     <!-- 二、组件插槽 -->
-    <!-- <SlotTest></SlotTest> -->
+    <SlotTest></SlotTest>
 
     <!-- 三、混入 -->
     <!-- <Mixincom></Mixincom> -->
@@ -17,13 +17,12 @@
 
     <!-- 六、递归组件 -->
     <!-- <Recursion></Recursion> -->
-
   </div>
 </template>
 
 <script>
 // import Communicate from '@/components/communicate'
-// import SlotTest from '@/components/slots'
+import SlotTest from '@/components/slots'
 // import Mixincom from '@/components/mixincom'
 // import FormTest from '@/components/form'
 // import Notice from '@/components/notice'
@@ -39,7 +38,7 @@ export default {
   // },
   components: {
     // Communicate,
-    // SlotTest,
+    SlotTest,
     // Mixincom,
     // FormTest,
     // Notice,

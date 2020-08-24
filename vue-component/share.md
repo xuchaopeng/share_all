@@ -1,6 +1,8 @@
-# 组件化实践
+# Vue 组件化实践
 
-组件化是 vue 的核心思想，它能提高开发效率，方便重复使用，简化调试步骤，提高整个项目的可维护性，便于多人协同开发。
+本次分享内容分以下几个部分（通讯、插槽、混入、实践、弹窗组件、递归组件）。<br>
+vue 组件实例的运行环境 vue 版本 2.2.6, node 版本 8.15.0 。每个部分都是一个大组件，以组件形式挂载到页面，来演示一些例子。<br>
+组件化是 vue 的核心思想，它能提高开发效率，方便重复使用，简化调试步骤，提高整个项目的可维护性，便于多人协同开发。<br>
 
 ## 组件通讯
 
@@ -153,14 +155,14 @@ inject: ['foo']
 ## 插槽
 
 &emsp;&emsp;插槽就是 Vue 实现内容分发的 API,将元素（slot）作为承载分发内容的出口。通常在我们开发通用组件库中大量使用。<br>
-
-&emsp;&emsp;在`vue2.6`及已上版本，slot 和 slot-scope 已经开始废弃， 有了新的替代: v-slot，v-slot 只能用在 template 上，和组件标签上，在这里我们只说 v-slot。
+&emsp;&emsp;通俗点：插槽，也就是 slot,是组件的一块 html 模版，这快模版显不显示、以及怎样显示由父组件来决定。<br>
+&emsp;&emsp;这里我只介绍最新使用方式 v-slot,它只能用在 template 上，和组件标签上。（`vue2.6`及已上版本，slot-scope 已开始废弃）
 
 [参考文章](https://www.cnblogs.com/jiajia123/p/12526307.html)
 
 ### 匿名插槽
 
-没有 slot 插槽情况下，组件标签内写的内容是不起任何作用的。一个元素里只能有一个匿名插槽。
+没有 slot 插槽情况下，组件标签内写的内容是不起任何作用的。匿名插槽没有设置 name 属性的插槽（默认插槽），一个元素里只能有一个匿名插槽。
 
 ```javascript
 // child1
@@ -174,27 +176,30 @@ inject: ['foo']
 
 ### 具名插槽
 
-将内容分发到子组件指定位置，可以存在多个具名插槽。
+具名插槽：具有 name 属性的插槽。使用场景：需要将内容分发到子组件指定位置，可以存在多个具名插槽。
 
 ```javascript
 // child2
 <div>
-  <slot></slot>
-  <slot name="content"></slot>
+  <h3>标题....</h3>
+  <slot name="conten1"></slot>
+  <p>其它内容....</p>
+  <slot name="conten2"></slot>
 </div>
 
 // parent
 <Child2>
-  <!-- 默认插槽用default做参数 -->
-  <template v-slot:default>具名插槽</template>
+  <!-- template上v-slot:插槽名  作为参数 -->
+  <template v-slot:conten1>内容1...</template>
   <!-- 具名插槽用插槽名做参数 -->
-  <template v-slot:content>内容...</template>
+  <template v-slot:conten2>内容2...</template>
 </Child2>
 ```
 
 ### 作用域插槽
 
-作用域插槽内（分发内容），父组件可以拿到子组件的数据。子组件可以在 slot 标签上绑定属性值。
+通俗的说：作用域插槽就是让插槽内容能够访问子组件中才有的数据。<br>
+使用场景：父组件需要使用到子组件的数据。子组件可以在 slot 标签上绑定属性值。
 
 ```html
 <!-- Child3 -->
@@ -202,8 +207,9 @@ inject: ['foo']
   <slot :foo="foo1"></slot>
 </div>
 
-<!-- parent 父组件通过slot-scope绑定的对象下拿到nickName的值 -->
+<!-- parent -->
 <Child3>
+  <!-- 默认插槽的插槽名称 default , slotProps指的是对应slot标签上属性组成的对象集合-->
   <template v-slot:default="slotProps">
     来自子组件数据：{{ slotProps.foo }}
   </template>
@@ -304,7 +310,7 @@ inject: ['foo']
 ### 其它
 
 1、实际上 vue1.x 版本是有$dispatch 和 $broadcast， 自 vue2.x 之后被弃用，可能官方有它自己考量。（平时的业务场景，不太会出现这么复杂的场景，即使存在可以用 vuex 替代）<br>
-2、通常使用场景，当我们在独立开发组件库的时候，不会依赖 vuex 的。 [elementUI 源码地址](https://github.com/ElemeFE/element/blob/dev/src/mixins/emitter.js) ||| [elementUI 源码截图](http://ttpcstatic.dftoutiao.com/ecms/image/20200821/734x940_703dc49e.png_.webp)
+2、当我们在独立开发 vue 组件库的时候，不会依赖 vuex 的。官方弃用，不表示不能用，要谨慎使用。 [elementUI 源码地址](https://github.com/ElemeFE/element/blob/dev/src/mixins/emitter.js) ||| [elementUI 源码截图](http://ttpcstatic.dftoutiao.com/ecms/image/20200821/734x940_703dc49e.png_.webp)
 
 ## 组件实践
 
@@ -558,10 +564,9 @@ this.$create(Notice, {
 
 ### 实现思路
 
-思路（实现全局 Notice 组件）：<br>
+思路（实现 Notice 弹窗组件）：<br>
 1、首先我得有一个 Notice 组件的配置，也就是 Notice.vue 文件。<br>
-2、要把 Notice 组件直接挂在到 body 下，用 render 函数实现。<br>
-3、全局引用，通过 vue 插件方式引入。<br>
+2、要把 Notice 组件直接挂在到 body 下，通过 render 函数实现。<br>
 
 ### 代码实现
 

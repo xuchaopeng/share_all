@@ -3,7 +3,7 @@
     <h3>communicate</h3>
     <button class="btns" @click="fbxx">发布$bus消息</button>
     <!-- 第一个子组件 -->
-    <Child1 :title="title1" name="c1"></Child1>
+    <Child1 :title="title1" name="c1---"></Child1>
     <div class="line"></div>
     <!-- 第二个子组件 -->
     <Child2 ref="c2"></Child2>
@@ -17,7 +17,7 @@ export default {
   name: 'communicate',
   provide() {
     return {
-      mvp: 'AAA',
+      mvp: 'AAA*****',
     }
   },
   components: {
@@ -26,12 +26,12 @@ export default {
   },
   data() {
     return {
-      title1: 'child1的title',
+      title1: 'child1的title---888',
     }
   },
   mounted() {
     this.$refs.c2.title = '大佬们'
-    // this.$children[1].title = 'child2的title';
+    this.$children[1].title = 'child2的title---';
   },
   methods: {
     fbxx() {

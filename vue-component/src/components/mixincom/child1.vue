@@ -1,6 +1,7 @@
 <template>
   <div class="coms-mixin">
     <h3>mixin-comp1</h3>
+    <!--  toggleview在本页面组件没有显性的定义，其实是通过混合融入（合并）进来的，-->
     <button class="btn" @click="toggleview">按我展示</button>
     <div v-if="isshow">
       <p>
@@ -21,10 +22,10 @@ export default {
     }
   },
   methods: {
-    toggleview() {
-      this.isshow = !this.isshow
-      // this.isshow = true
-    },
+    // toggleview() {
+    //   console.log('child1中taggleview')
+    //   this.isshow = !this.isshow
+    // },
   },
   mounted() {
     // console.log('*********************Comp2-mouted')

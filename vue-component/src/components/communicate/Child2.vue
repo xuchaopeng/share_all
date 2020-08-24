@@ -16,7 +16,7 @@ export default {
   },
   methods: {
     clickhandler() {
-      this.$parent.$emit('foo', '来自child2的慰问')
+      this.$parent.$emit('foo', '来自child2的慰问----')
     },
   },
 }
