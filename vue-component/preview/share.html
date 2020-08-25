@@ -144,7 +144,7 @@ this.$parent.$emit(&#39;foo&#39;);
 </ul>
 <h3 id="-">祖先组件 =&gt; 后代组件</h3>
 <blockquote>
-<p>由于嵌套层数过多，传递 props 不切实际，vue 给我们提供了 <code>provide/inject</code> 高级特性完成该任务。(vue 2.2.0 之后新增的)<br /></p>
+<p>由于嵌套层数过多，传递 props 不切实际，vue 给我们提供了 <code>provide/inject</code> 高级特性完成通讯任务。(vue 2.2.0 之后新增的)<br /></p>
 </blockquote>
 <blockquote>
 <p>简单说，父级组件中通过<code>provide</code>来提供变量，然后在子组件中通过<code>inject</code>来注入变量。不论子组件有多深，只要调用<code>inject</code>就可以注入<code>provide</code>中的数据。</p>
@@ -342,7 +342,7 @@ this.$bus.$emit(&#39;event-bus&#39;, &#39;来自远方的问候&#39;);
 <p>===&gt; @/mixins/emitter.js</p>
 <h3 id="-">其它</h3>
 <p>1、实际上 vue1.x 版本是有$dispatch 和 $broadcast， 自 vue2.x 之后被弃用，可能官方有它自己考量。（平时的业务场景，不太会出现这么复杂的场景，即使存在可以用 vuex 替代）<br>
-2、通常使用场景，当我们在独立开发组件库的时候，不会依赖 vuex 的。 <a href="https://github.com/ElemeFE/element/blob/dev/src/mixins/emitter.js">elementUI 源码地址</a> ||| <a href="http://ttpcstatic.dftoutiao.com/ecms/image/20200821/734x940_703dc49e.png_.webp">elementUI 源码截图</a></p>
+2、当我们在独立开发 vue 组件库的时候，不会依赖 vuex 的。官方弃用，不表示不能用，要谨慎使用。 <a href="https://github.com/ElemeFE/element/blob/dev/src/mixins/emitter.js">elementUI 源码地址</a> ||| <a href="http://ttpcstatic.dftoutiao.com/ecms/image/20200821/734x940_703dc49e.png_.webp">elementUI 源码截图</a></p>
 <h2 id="-">组件实践</h2>
 <p>elementUI 表单提交组件简版的实现，是对已上内容的综合实践。一个很典型的组件实现的例子。(高阶组件封装)
 <a href="http://ttpcstatic.dftoutiao.com/ecms/image/20200809/947x931_02f29ee9.png_.webp">elementUI 表单提交使用截图</a></p>
@@ -577,10 +577,9 @@ validate() {
 }).show();
 </code></pre>
 <h3 id="-">实现思路</h3>
-<p>思路（实现全局 Notice 组件）：<br>
+<p>思路（实现 Notice 弹窗组件）：<br>
 1、首先我得有一个 Notice 组件的配置，也就是 Notice.vue 文件。<br>
-2、要把 Notice 组件直接挂在到 body 下，用 render 函数实现。<br>
-3、全局引用，通过 vue 插件方式引入。<br></p>
+2、要把 Notice 组件直接挂在到 body 下，通过 render 函数实现。<br></p>
 <h3 id="-">代码实现</h3>
 <p>===&gt; 代码实例 @components/notice</p>
 <h2 id="-">递归组件</h2>
