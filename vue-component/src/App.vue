@@ -1,4 +1,5 @@
 <template>
+  <!-- 共6个部分，每个部分都封装成一个大组件，以组件形式通过app组件挂载到页面，从而直观的展示一些案例。 -->
   <div id="app">
     <!-- 一、组件通信 -->
     <Communicate></Communicate>
@@ -27,7 +28,6 @@ import Communicate from '@/components/communicate'
 // import FormTest from '@/components/form'
 // import Notice from '@/components/notice'
 // import Recursion from '@/components/recursion'
-
 
 export default {
   name: 'app',
