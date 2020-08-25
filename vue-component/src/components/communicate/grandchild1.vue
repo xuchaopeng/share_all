@@ -3,6 +3,7 @@
     <h3>Grandchild1</h3>
     <p>{{ mvp }}</p>
     <p>{{ msg }}</p>
+    <button @click="clickhandler">派发消息</button>
   </div>
 </template>
 
@@ -14,6 +15,11 @@ export default {
     return {
       msg: '',
     }
+  },
+  methods: {
+    clickhandler() {
+      this.$dispatch('dispatch', '来自GrandGrandChild1的消息派发')
+    },
   },
   mounted() {
     this.$bus.$on('event-bus', (msg) => {

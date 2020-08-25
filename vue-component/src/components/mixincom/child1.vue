@@ -28,7 +28,7 @@ export default {
     // },
   },
   mounted() {
-    // console.log('*********************Comp2-mouted')
+    // console.log('*********************组件内部child1的钩子-mouted')
   },
 }
 </script>

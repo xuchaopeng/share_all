@@ -1,6 +1,6 @@
 <template>
   <div id="communicate" class="communicate">
-    <h3>communicate-{{ v }}</h3>
+    <h3>communicate-{{ v }} {{ msg }}</h3>
     <button class="btns" @click="fbxx">发布$bus消息</button>
     <!-- 第一个子组件 -->
     <Child1 :title="title1" name1="c1---" name2="c2---"></Child1>
@@ -18,6 +18,7 @@ export default {
   provide() {
     return {
       mvp: 'AAA*****',
+      msg: '',
     }
   },
   components: {
@@ -34,6 +35,10 @@ export default {
     this.$refs.c2.title = '大佬们******|||||'
     // 当存在异步组件的时候，顺序是不保证。children是一个数组，每个成员存放的是当前子组件的实例化对象，但是psuh 的进去的顺序是按照组件渲染的顺序。
     this.$children[1].title = 'child2的title---'
+    // 订阅dispatch来接收消息
+    this.$on('dispatch', (msg) => {
+      this.msg = '接收dispatch消息:' + msg
+    })
   },
   methods: {
     fbxx() {

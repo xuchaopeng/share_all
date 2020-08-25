@@ -2,13 +2,13 @@
   <!-- 共6个部分，每个部分都封装成一个大组件，以组件形式通过app组件挂载到页面，从而直观的展示一些案例。 -->
   <div id="app">
     <!-- 一、组件通信 -->
-    <Communicate></Communicate>
+    <!-- <Communicate></Communicate> -->
 
     <!-- 二、组件插槽 -->
     <!-- <SlotTest></SlotTest> -->
 
     <!-- 三、混入 -->
-    <!-- <Mixincom></Mixincom> -->
+    <Mixincom></Mixincom>
 
     <!-- 四、组件实践，表单实例 -->
     <!-- <form-test></form-test> -->
@@ -22,9 +22,9 @@
 </template>
 
 <script>
-import Communicate from '@/components/communicate'
+// import Communicate from '@/components/communicate'
 // import SlotTest from '@/components/slots'
-// import Mixincom from '@/components/mixincom'
+import Mixincom from '@/components/mixincom'
 // import FormTest from '@/components/form'
 // import Notice from '@/components/notice'
 // import Recursion from '@/components/recursion'
@@ -37,9 +37,9 @@ export default {
   //   }
   // },
   components: {
-    Communicate,
+    // Communicate,
     // SlotTest,
-    // Mixincom,
+    Mixincom,
     // FormTest,
     // Notice,
     // Recursion,

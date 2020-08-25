@@ -14,6 +14,11 @@ export default {
       a: '其它',
     }
   },
+  mounted() {
+    setTimeout(() => {
+      this.foo1 = 'slot-v3内的数据-2秒后发生了改变'
+    }, 2000)
+  },
 }
 </script>
 

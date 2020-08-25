@@ -11,6 +11,6 @@ export const toggle = {
     },
   },
   mounted() {
-    console.log('*********************Mixins-mounted');
+    console.log('*********************混合Mixins中的钩子-mounted');
   },
 };

@@ -84,9 +84,10 @@
 
   ```javascript
 
-  // child1 通过给父组件注册（订阅）一个事件foo
+  // 兄弟组件child1 通过给父组件注册（订阅）一个事件foo
   this.$parent.$on('foo', handle);
-  // child2 获取到共同的父辈组件，并通过$emit派发这个foo事件
+
+  // 兄弟组件child2 获取到共同的父辈组件，并通过$emit派发这个foo事件
   this.$parent.$emit('foo','来自兄弟的问候');
   ```
 
@@ -114,7 +115,7 @@ inject: ['foo']
 
 - **事件总线**
 
-  - 创建一个类负责事件派发、监听与回调管理
+  - 创建一个类负责事件派发、监听与回调管理 (观察者模式的实现)
 
   ```javascript
   // 事件派发、监听和回调管理
@@ -122,10 +123,12 @@ inject: ['foo']
     constructor() {
       this.callbacks = {};
     }
+    // 通过$on方法来注册name事件,并将其回调fn放入callbacks内部对象中
     $on(name, fn) {
       this.callbacks[name] = this.callbacks[name] || [];
       this.callbacks[name].push(fn);
     }
+    // 调用$emit方法来派发name事件，遍历执行改事件的所有回调函数，并传入参数args
     $emit(name, args) {
       if (this.callbacks[name]) {
         this.callbacks[name].forEach((cb) => cb(args));
@@ -133,12 +136,13 @@ inject: ['foo']
     }
   }
 
-  // 使用 main.js 挂在Vue原型上
+  //在入口 main.js中，将Bus实例化对象 挂在Vue构造函数的原型上
   Vue.prototype.$bus = new Bus();
 
-  // Child1 订阅消息
+  // 组件Child1中， 通过调用实例化类Bus上的$on方法来订阅消息
   this.$bus.$on('event-bus', handle);
-  // Child2 发布消息
+
+  // 组件Child2中， 调用$emit发布event-bus消息
   this.$bus.$emit('event-bus', '来自远方的问候');
   ```
 
@@ -163,7 +167,7 @@ inject: ['foo']
 
 ### 匿名插槽
 
-没有 slot 插槽情况下，组件标签内写的内容是不起任何作用的。匿名插槽没有设置 name 属性的插槽（默认插槽），一个元素里只能有一个匿名插槽。
+没有 slot 插槽情况下，组件标签内写的内容是不起任何作用的。匿名插槽没有设置 name 属性的插槽（默认插槽），一个组件里只能有一个匿名插槽。
 
 ```javascript
 // child1
@@ -199,7 +203,7 @@ inject: ['foo']
 
 ### 作用域插槽
 
-通俗的说：作用域插槽就是让插槽内容能够访问子组件中才有的数据。<br>
+通俗的说：`作用域插槽`就是让`插槽内容`能够访问子组件中才有的数据。<br>
 使用场景：父组件需要使用到子组件的数据。子组件可以在 slot 标签上绑定属性值。
 
 ```html
