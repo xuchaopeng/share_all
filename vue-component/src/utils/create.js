@@ -5,8 +5,9 @@
 import Vue from 'vue';
 
 /**
- * Component  不是组件，只是组件的一个配置对象。
- * props  我们使用时候传进来的配置
+ * 将组件的配置对象，变成一个 组件实例化对象。并添加销毁自己的方法
+ * @param Component  不是组件，只是组件的一个配置对象。
+ * @param props  我们使用时候传进来的配置
  */
 export default function create(Component, props) {
   // 1.创建传入组件实例
@@ -20,7 +21,7 @@ export default function create(Component, props) {
   //   // 销毁组件
   //   comp.$destroy();
   // };
-
+  // 2. 通过实例化Vue来间接创建一个组件对象。
   const vm = new Vue({
     render(h) {
       // h即是createElement(tag, data, children)
