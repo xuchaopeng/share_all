@@ -12,25 +12,25 @@
 </template>
 
 <script>
-import { toggle } from '@/mixins/toggle'
+import { toggle } from '@/mixins/toggle';
 export default {
   name: 'mixin-child1',
   mixins: [toggle],
   data() {
     return {
-      // isshow: true,
-    }
+      isshow: true,
+    };
   },
   methods: {
-    // toggleview() {
-    //   console.log('child1中taggleview')
-    //   this.isshow = !this.isshow
-    // },
+    toggleview() {
+      console.log('child1中taggleview');
+      this.isshow = !this.isshow;
+    },
   },
   mounted() {
-    // console.log('*********************组件内部child1的钩子-mouted')
+    console.log('*********************组件内部child1的钩子-mouted');
   },
-}
+};
 </script>
 
 <style lang="less" scoped>

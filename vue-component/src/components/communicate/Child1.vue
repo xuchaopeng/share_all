@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import Grandchild1 from '@/components/communicate/grandchild1.vue'
+import Grandchild1 from '@/components/communicate/grandchild1.vue';
 export default {
   name: 'com-child1',
   inheritAttrs: false,
@@ -22,18 +22,18 @@ export default {
   data() {
     return {
       msg: 'A',
-    }
+    };
   },
   mounted() {
     this.$parent.$on('foo', (a) => {
-      this.msg = a
-    })
+      this.msg = a;
+    });
   },
   methods: {},
   components: {
     Grandchild1,
   },
-}
+};
 </script>
 
 <style lang="less" scoped>

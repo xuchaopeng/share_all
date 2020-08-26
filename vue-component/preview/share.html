@@ -67,7 +67,7 @@
           	<article class='markdown-body'>
             	<h1 id="vue-">Vue 组件化实践</h1>
 <p>本次分享内容分以下几个部分（通讯、插槽、混入、实践、弹窗组件、递归组件）。<br>
-vue 组件实例的运行环境 vue 版本 2.2.6, node 版本 8.15.0 。每个部分都是一个大组件，以组件形式挂载到页面，来演示一些例子。<br>
+每个部分会附带一些例子，其运行环境 vue 版本 2.2.6, node 版本 8.15.0 。<br>
 组件化是 vue 的核心思想，它能提高开发效率，方便重复使用，简化调试步骤，提高整个项目的可维护性，便于多人协同开发。<br></p>
 <h2 id="-">组件通讯</h2>
 <h3 id="-">父组件 =&gt; 子组件</h3>
@@ -135,16 +135,18 @@ methods: {
 <blockquote>
 <p>通过共同的祖辈组件搭桥，$parent 或 $root</p>
 </blockquote>
-<pre><code class="lang-javascript">// brother1
+<pre><code class="lang-javascript">
+// 兄弟组件child1 通过给父组件注册（订阅）一个事件foo
 this.$parent.$on(&#39;foo&#39;, handle);
-// brother2
-this.$parent.$emit(&#39;foo&#39;);
+
+// 兄弟组件child2 获取到共同的父辈组件，并通过$emit派发这个foo事件
+this.$parent.$emit(&#39;foo&#39;,&#39;来自兄弟的问候&#39;);
 </code></pre>
 </li>
 </ul>
 <h3 id="-">祖先组件 =&gt; 后代组件</h3>
 <blockquote>
-<p>由于嵌套层数过多，传递 props 不切实际，vue 给我们提供了 <code>provide/inject</code> 高级特性完成通讯任务。(vue 2.2.0 之后新增的)<br /></p>
+<p>通常我们父子组件讯息的时候，如果组件层级较深，通过props显然不切实际。vue 给我们提供了 <code>provide/inject</code> 高级特性完成通讯任务。(vue 2.2.0 之后新增的)<br /></p>
 </blockquote>
 <blockquote>
 <p>简单说，父级组件中通过<code>provide</code>来提供变量，然后在子组件中通过<code>inject</code>来注入变量。不论子组件有多深，只要调用<code>inject</code>就可以注入<code>provide</code>中的数据。</p>
@@ -165,17 +167,19 @@ inject: [&#39;foo&#39;]
 <ul>
 <li><p><strong>事件总线</strong></p>
 <ul>
-<li>创建一个类负责事件派发、监听与回调管理</li>
+<li>创建一个类负责事件派发、监听与回调管理 (观察者模式的实现)</li>
 </ul>
 <pre><code class="lang-javascript">// 事件派发、监听和回调管理
 class Bus {
   constructor() {
     this.callbacks = {};
   }
+  // 通过$on方法来注册name事件,并将其回调fn放入callbacks内部对象中
   $on(name, fn) {
     this.callbacks[name] = this.callbacks[name] || [];
     this.callbacks[name].push(fn);
   }
+  // 调用$emit方法来派发name事件，遍历执行改事件的所有回调函数，并传入参数args
   $emit(name, args) {
     if (this.callbacks[name]) {
       this.callbacks[name].forEach((cb) =&gt; cb(args));
@@ -183,12 +187,13 @@ class Bus {
   }
 }
 
-// 使用 main.js 挂在Vue原型上
+//在入口 main.js中，将Bus实例化对象 挂在Vue构造函数的原型上
 Vue.prototype.$bus = new Bus();
 
-// Child1 订阅消息
+// 组件Child1中， 通过调用实例化类Bus上的$on方法来订阅消息
 this.$bus.$on(&#39;event-bus&#39;, handle);
-// Child2 发布消息
+
+// 组件Child2中， 调用$emit发布event-bus消息
 this.$bus.$emit(&#39;event-bus&#39;, &#39;来自远方的问候&#39;);
 </code></pre>
 <ul>
@@ -212,7 +217,7 @@ this.$bus.$emit(&#39;event-bus&#39;, &#39;来自远方的问候&#39;);
 &emsp;&emsp;这里我只介绍最新使用方式 v-slot,它只能用在 template 上，和组件标签上。（<code>vue2.6</code>及已上版本，slot-scope 已开始废弃）</p>
 <p><a href="https://www.cnblogs.com/jiajia123/p/12526307.html">参考文章</a></p>
 <h3 id="-">匿名插槽</h3>
-<p>没有 slot 插槽情况下，组件标签内写的内容是不起任何作用的。匿名插槽没有设置 name 属性的插槽（默认插槽），一个元素里只能有一个匿名插槽。</p>
+<p>没有 slot 插槽情况下，组件标签内写的内容是不起任何作用的。匿名插槽没有设置 name 属性的插槽（默认插槽），一个组件里只能有一个匿名插槽。</p>
 <pre><code class="lang-javascript">// child1
 &lt;div&gt;
   &lt;slot&gt;&lt;/slot&gt;
@@ -240,7 +245,7 @@ this.$bus.$emit(&#39;event-bus&#39;, &#39;来自远方的问候&#39;);
 &lt;/Child2&gt;
 </code></pre>
 <h3 id="-">作用域插槽</h3>
-<p>通俗的说：作用域插槽就是让插槽内容能够访问子组件中才有的数据。<br>
+<p>通俗的说：<code>作用域插槽</code>就是让<code>插槽内容</code>能够访问子组件中才有的数据。<br>
 使用场景：父组件需要使用到子组件的数据。子组件可以在 slot 标签上绑定属性值。</p>
 <pre><code class="lang-html">&lt;!-- Child3 --&gt;
 &lt;div&gt;

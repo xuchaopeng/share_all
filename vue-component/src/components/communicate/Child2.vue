@@ -3,7 +3,7 @@
     <h3>Child2</h3>
     <p>{{ title }}</p>
     <button @click="clickhandler1">通讯父组件</button>
-    <!-- <button @click="clickhandler2">通讯child1</button> -->
+    <button @click="clickhandler2">通讯child1</button>
   </div>
 </template>
 
@@ -13,17 +13,17 @@ export default {
   data() {
     return {
       title: '',
-    }
+    };
   },
   methods: {
     clickhandler1() {
-      this.$emit('add', 'B')
+      this.$emit('add', 'B');
     },
     clickhandler2() {
-      this.$parent.$emit('foo', '来自child2的慰问----')
+      this.$parent.$emit('foo', '来自child2的慰问----');
     },
   },
-}
+};
 </script>
 
 <style lang="less" scoped>

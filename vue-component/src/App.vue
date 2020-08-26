@@ -8,7 +8,7 @@
     <!-- <SlotTest></SlotTest> -->
 
     <!-- 三、混入 -->
-    <Mixincom></Mixincom>
+    <!-- <Mixincom></Mixincom> -->
 
     <!-- 四、组件实践，表单实例 -->
     <!-- <form-test></form-test> -->
@@ -17,17 +17,17 @@
     <!-- <Notice></Notice> -->
 
     <!-- 六、递归组件 -->
-    <!-- <Recursion></Recursion> -->
+    <Recursion></Recursion>
   </div>
 </template>
 
 <script>
-// import Communicate from '@/components/communicate'
-// import SlotTest from '@/components/slots'
-import Mixincom from '@/components/mixincom'
+// import Communicate from '@/components/communicate';
+// import SlotTest from '@/components/slots';
+// import Mixincom from '@/components/mixincom';
 // import FormTest from '@/components/form'
-// import Notice from '@/components/notice'
-// import Recursion from '@/components/recursion'
+// import Notice from '@/components/notice';
+import Recursion from '@/components/recursion';
 
 export default {
   name: 'app',
@@ -39,10 +39,10 @@ export default {
   components: {
     // Communicate,
     // SlotTest,
-    Mixincom,
+    // Mixincom,
     // FormTest,
     // Notice,
-    // Recursion,
+    Recursion,
   },
   mounted() {
     // this.$refs.hw.xx = 'xxxxxx'
@@ -51,10 +51,10 @@ export default {
   },
   methods: {
     onMyClick() {
-      console.log('myclick')
+      console.log('myclick');
     },
   },
-}
+};
 </script>
 
 <style>
