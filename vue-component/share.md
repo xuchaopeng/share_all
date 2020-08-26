@@ -230,7 +230,65 @@ inject: ['foo']
 
 - **基本使用方式**
 
-  ===> 代码实例 @components/mixincom
+  定义混合(toggle.js)
+
+  ```javascript
+  export const toggle = {
+    data() {
+      return {
+        isshow: false,
+      };
+    },
+    methods: {
+      toggleview() {
+        console.log('混合中taggleview');
+        this.isshow = !this.isshow;
+      },
+    },
+    mounted() {
+      console.log('*********************混合Mixins中的钩子-mounted');
+    },
+  };
+  ```
+
+  使用混合(child1.vue)
+
+  ```html
+  <template>
+    <div class="coms-mixin">
+      <h3>mixin-comp1</h3>
+      <!--  toggleview在本页面组件没有显性的定义，其实是通过混合融入（合并）进来的，-->
+      <button class="btn" @click="toggleview">按我展示</button>
+      <div v-if="isshow">
+        <p>
+          Mixin允许你封装一块在应用的其他组件中都可以使用的函数。如果使用姿势得当，他们不会改变函数作用域外部的任何东西，因此哪怕执行多次，只要是同样的输入你总是能得到一样的值，真的很强大！
+        </p>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    import { toggle } from '@/mixins/toggle';
+    export default {
+      name: 'mixin-child1',
+      mixins: [toggle],
+      data() {
+        return {
+          isshow: true,
+        };
+      },
+      methods: {
+        toggleview() {
+          console.log('child1中taggleview');
+          this.isshow = !this.isshow;
+        },
+      },
+      mounted() {
+        console.log('*********************组件内部child1的钩子-mouted');
+      },
+    };
+  </script>
+  ```
 
 - **合并问题**
 
@@ -575,11 +633,105 @@ this.$create(Notice, {
 
 ### 代码实现
 
-===> 代码实例 @components/notice
+Notice.vue
+
+```html
+<template>
+  <div class="box" v-if="isShow">
+    <h3>{{ title }}</h3>
+    <p class="box-content">{{ message }}</p>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    title: {
+      type: String,
+      default: '',
+    },
+    message: {
+      type: String,
+      default: '',
+    },
+    duration: {
+      type: Number,
+      default: 1000,
+    },
+  },
+  data() {
+    return {
+      isShow: false,
+    }
+  },
+  methods: {
+    show() {
+      this.isShow = true
+      setTimeout(this.hide, this.duration)
+    },
+    hide() {
+      this.isShow = false
+      this.remove()
+    },
+  },
+}
+</script>
+```
+
+$create通用方法
+
+```javascript
+import Vue from 'vue';
+/**
+ * 将组件的配置对象，变成一个 组件实例化对象。并添加销毁自己的方法
+ * @param Component  不是组件，只是组件的一个配置对象。
+ * @param props  我们使用时候传进来的配置
+ */
+export default function create(Component, props) {
+  const vm = new Vue({
+    // h即是createElement(tag, data, children)
+    render(h) {
+      return h(Component, { props });// 返回虚拟dom
+    },
+  }).$mount(); // 只挂载，不设置宿主，意思是执行初始化过程，但是没有追加dom操作
+  document.body.appendChild(vm.$el); // vm.$el 获取vue实例关联的DOM元素
+  // 获取组件实例
+  const comp = vm.$children[0];
+  //附加一个删除方法
+  comp.remove = () => {
+    document.body.removeChild(vm.$el); // 移除dom
+    vm.$destroy(); // 销毁组件
+  };
+  return comp;
+}
+```
+
+使用姿势
+
+```html
+<template>
+  <div>
+    <button @click="clickMe">点击全局弹窗组件</button>
+  </div>
+</template>
+
+<script>
+import Notice from '@/components/notice/notice.vue'
+export default {
+  methods: {
+    clickMe() {
+      this.$create(Notice, {
+        title: '大佬喊你来搬砖',
+        message: '弹出消息提示',
+        duration: 2000,
+      }).show()
+    },
+  },
+}
+</script>
+```
 
 ## 递归组件
-
-===> 代码实例 @components/recursion
 
 - **递归组件 Node**
 
